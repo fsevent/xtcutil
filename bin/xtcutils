@@ -6,27 +6,7 @@
 
 require 'pp'
 
-require 'xtcutils/parser'
-
 def main_help(argv)
-end
-
-def main_json(argv)
-  argv.each {|arg|
-    enc = Encoding.find("locale")
-    if !File.read(arg, external_endoding:enc).valid_encoding?
-      enc = Encoding::ISO_8859_1
-    end
-    File.open(arg, :external_encoding=>enc) {|f|
-      params = {}
-      result = []
-      def result.<<(arg)
-        super
-        pp arg
-      end
-      parse_io params, result, f
-    }
-  }
 end
 
 def main(argv)
@@ -38,7 +18,7 @@ def main(argv)
   when 'help'
     main_help(argv)
   when 'json'
-    main_json(argv)
+    require 'xtcutils/cmd_json'; main_json(argv)
   else
     $stderr.print "unexpected subcommand: #{subcommand}"
     exit false
