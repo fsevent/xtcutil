@@ -60,6 +60,14 @@ class XTCWindow < Gtk::Window
           ctx.move_to(x1, y1)
           ctx.line_to(x2, y2)
           ctx.stroke
+        when 'joint'
+          # track transition curve (easement) is replaced by straight line.
+          ctx.set_source_rgb(0, 0, 0)
+          x1, y1 = h[:segs][0][:pos]
+          x2, y2 = h[:segs][1][:pos]
+          ctx.move_to(x1, y1)
+          ctx.line_to(x2, y2)
+          ctx.stroke
         when 'curve'
           ctx.set_source_rgb(0, 0, 0)
           cx, cy = h[:pos]
