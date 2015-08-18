@@ -572,7 +572,11 @@ end
 
 def main(argv)
   argv.each {|arg|
-    File.open(arg, :external_encoding=>"ASCII-8BIT") {|f|
+    enc = Encoding.find("locale")
+    if !File.read(arg, external_endoding:enc).valid_encoding?
+      enc = Encoding::ISO_8859_1
+    end
+    File.open(arg, :external_encoding=>enc) {|f|
       params = {}
       result = []
       def result.<<(arg)
