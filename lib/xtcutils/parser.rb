@@ -1,10 +1,3 @@
-#!/usr/bin/ruby
-
-# usage:
-#   xtrkcad2json file.xtc
-
-require 'pp'
-
 ELEV_NONE = 0
 ELEV_DEF = 1
 ELEV_COMP = 2
@@ -569,23 +562,3 @@ def parse_io(params, result, io)
   end
   result
 end
-
-def main(argv)
-  argv.each {|arg|
-    enc = Encoding.find("locale")
-    if !File.read(arg, external_endoding:enc).valid_encoding?
-      enc = Encoding::ISO_8859_1
-    end
-    File.open(arg, :external_encoding=>enc) {|f|
-      params = {}
-      result = []
-      def result.<<(arg)
-        super
-        pp arg
-      end
-      parse_io params, result, f
-    }
-  }
-end
-
-main ARGV

@@ -1,0 +1,48 @@
+#!/usr/bin/ruby
+
+# usage:
+#   xtcutils help
+#   xtcutils json file.xtc
+
+require 'pp'
+
+require 'xtcutils/parser'
+
+def main_help(argv)
+end
+
+def main_json(argv)
+  argv.each {|arg|
+    enc = Encoding.find("locale")
+    if !File.read(arg, external_endoding:enc).valid_encoding?
+      enc = Encoding::ISO_8859_1
+    end
+    File.open(arg, :external_encoding=>enc) {|f|
+      params = {}
+      result = []
+      def result.<<(arg)
+        super
+        pp arg
+      end
+      parse_io params, result, f
+    }
+  }
+end
+
+def main(argv)
+  if argv.empty?
+    return main_help(argv)
+  end
+  subcommand = argv.shift
+  case subcommand
+  when 'help'
+    main_help(argv)
+  when 'json'
+    main_json(argv)
+  else
+    $stderr.print "unexpected subcommand: #{subcommand}"
+    exit false
+  end
+end
+
+main ARGV
