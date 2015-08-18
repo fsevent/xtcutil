@@ -7,11 +7,16 @@
 require 'pp'
 
 def main_help(argv)
+  puts <<'End'
+usage:
+  xtcutils help
+  xtcutils json file.xtc
+End
 end
 
 def main(argv)
   if argv.empty?
-    return main_help(argv)
+    argv.unshift 'help'
   end
   subcommand = argv.shift
   case subcommand
