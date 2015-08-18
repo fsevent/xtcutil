@@ -16,6 +16,13 @@ ELEV_MASK = 0x07
 CAR_ITEM_HASNOTES = (1<<8)
 CAR_ITEM_ONLAYOUT = (1<<9)
 
+def color_from_rgb(rgb)
+  b = rgb & 0xff
+  g = (rgb >> 8) & 0xff
+  r = (rgb >> 16) & 0xff
+  sprintf("\#%02X%02X%02X", r, g, b)
+end
+
 def get_args(format, str)
   ret = []
   while !format.empty?
@@ -91,37 +98,37 @@ def parse_segs(params, segs, io)
       case type
       when 'L' # SEG_STRLIN
         rgb, width, pos0, elev0, pos1, elev1 = get_args(has_elev ? "lwpfpf":"lwpYpY", args)
-        segs << { type:type, rgb:rgb, width:width, pos0:pos0, pos1:pos1 }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos0:pos0, pos1:pos1 }
       when 'Q' # SEG_TBLEDGE
         rgb, width, pos0, elev0, pos1, elev1 = get_args(has_elev ? "lwpfpf":"lwpYpY", args)
-        segs << { type:type, rgb:rgb, width:width, pos0:pos0, pos1:pos1 }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos0:pos0, pos1:pos1 }
       when 'M' # SEG_DIMLIN
         rgb, width, pos0, elev0, pos1, elev1, option = get_args(has_elev ? "lwpfpfl":"lwpYpYZ", args)
-        segs << { type:type, rgb:rgb, width:width, pos0:pos0, pos1:pos1, option:option }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos0:pos0, pos1:pos1, option:option }
       when 'B' # SEG_BENCH
         rgb, width, pos0, elev0, pos1, elev1, option = get_args(has_elev ? "lwpfpfl":"lwpYpYZ", args)
         #option = BenchInputOption(option)
-        segs << { type:type, rgb:rgb, width:width, pos0:pos0, pos1:pos1, option:option }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos0:pos0, pos1:pos1, option:option }
       when 'A' # SEG_CRVLIN
         rgb, width, radius, center, elev0, a0, a1 = get_args(has_elev ? "lwfpfff":"lwfpYff", args)
-        segs << { type:type, rgb:rgb, width:width, radius:radius, center:center, a0:a0, a1:a1 }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, radius:radius, center:center, a0:a0, a1:a1 }
       when 'S' # SEG_STRTRK
         rgb, width, pos0, elev0, pos1, elev1 = get_args(has_elev ? "lwpfpf":"lwpYpY", args)
-        segs << { type:type, rgb:rgb, width:width, pos0:pos0, pos1:pos1 }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos0:pos0, pos1:pos1 }
       when 'C' # SEG_CRVTRK
         rgb, width, radius, center, elev0, a0, a1 = get_args(has_elev ? "lwfpfff":"lwfpYff", args)
-        segs << { type:type, rgb:rgb, radius:radius, center:center, a0:a0, a1:a1 }
+        segs << { type:type, color:color_from_rgb(rgb), radius:radius, center:center, a0:a0, a1:a1 }
       when 'J' # SEG_JNTTRK
         rgb, width, pos, elev0, angle, l0, l1, r, l, option = get_args(has_elev ? "lwpffffffl":"lwpYfffffl", args)
         negate = (option&1) != 0
         flip = (option&2)!= 0
         scurve = (option&4) != 0
-        segs << { type:type, rgb:rgb, width:width, pos:pos, angle:angle, l0:l, R:r, L:l, negate:negate, filp:flip, scurve:scurve }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos:pos, angle:angle, l0:l, R:r, L:l, negate:negate, filp:flip, scurve:scurve }
       when 'G' # SEG_FILCRCL
         rgb, width, radius, center, elev0 = get_args(has_elev ? "lwfpf":"lwfpY", args)
         a0 = 0.0;
         a1 = 360.0;
-        segs << { type:type, rgb:rgb, width:width, radius:radius, center:center, a0:a0, a1:a1 }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, radius:radius, center:center, a0:a0, a1:a1 }
       when 'Y', 'F' # SEG_POLY, SEG_FILPOLY
         rgb, width, cnt = get_args("lwd", args)
         pts = []
@@ -136,10 +143,10 @@ def parse_segs(params, segs, io)
         }
         angle = 0.0
         orig = [0.0, 0.0]
-        segs << { type:type, rgb:rgb, width:width, angle:angle, orig:orig, pts:pts }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, angle:angle, orig:orig, pts:pts }
       when 'Z' # SEG_TEXT
         rgb, pos, angle, fontSize, string = get_args("lpf0fq", args)
-        segs << { type:type, rgb:rgb, pos:pos, angle:angle, fontSize:fontSize, string:string }
+        segs << { type:type, color:color_from_rgb(rgb), pos:pos, angle:angle, fontSize:fontSize, string:string }
       when 'E', 'T' # SEG_UNCEP, SEG_CONEP
         if type == 'T'
           index, args = get_args('dc', args)
@@ -467,7 +474,7 @@ def parse_car(params, result, args, io)
     car_width:car_width,
     truck_center:truck_center,
     coupled_length:coupled_length,
-    rgb:rgb,
+    color:color_from_rgb(rgb),
     purch_price:purch_price,
     curr_price:curr_price,
     condition:condition,
