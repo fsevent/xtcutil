@@ -176,7 +176,7 @@ def parse_segs(params, segs, io)
         seg[:elev_doff] = elev_doff
         segs << seg
       when 'P' # SEG_PATH
-        if /\A"([^"]*)"/ !~ args
+        if /\A"([^"]*)"\s*/ !~ args
           raise "quoted name expected: #{args}"
         end
         name = $1
@@ -200,77 +200,79 @@ def parse_segs(params, segs, io)
   end
 end
 
-def parse_turnout(params, result, line, io)
+def parse_turnout(params, result, args, io)
   if params[:version] < 3
-    index, layer, scale, visible, orig, angle, title = get_args('dXsdpfq', line)
+    index, layer, scale, visible, orig, angle, title = get_args('dXsdpfq', args)
   elsif params[:version] < 9
-    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpYfq', line)
+    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpYfq', args)
   else
-    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpffq', line)
+    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpffq', args)
   end
+  # xxx: record parsed args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'turnout', line: line, segs: segs }
+  result << { type: 'turnout', args: args, segs: segs }
 end
 
-def parse_turntable(params, result, line, io)
-  # xxx: parse line
+def parse_turntable(params, result, args, io)
+  # xxx: parse args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'turntable', line: line, segs: segs }
+  result << { type: 'turntable', args: args, segs: segs }
 end
 
-def parse_structure(params, result, line, io)
+def parse_structure(params, result, args, io)
   if params[:version] < 3
-    index, layer, scale, visible, orig, angle, title = get_args('dXsdpfq', line)
+    index, layer, scale, visible, orig, angle, title = get_args('dXsdpfq', args)
   elsif params[:version] <= 5
-    index, layer, scale, visible, orig, angle, title = get_args('dL00sdpfq', line)
+    index, layer, scale, visible, orig, angle, title = get_args('dL00sdpfq', args)
   elsif params[:version] < 9
-    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpYfq', line)
+    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpYfq', args)
   else
-    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpffq', line)
+    index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpffq', args)
   end
+  # xxx: record parsed args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'structure', line: line, segs: segs }
+  result << { type: 'structure', args: args, segs: segs }
 end
 
-def parse_draw(params, result, line, io)
-  # xxx: parse line
+def parse_draw(params, result, args, io)
+  # xxx: parse args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'draw', line: line, segs: segs }
+  result << { type: 'draw', args: args, segs: segs }
 end
 
-def parse_joint(params, result, line, io)
-  # xxx: parse line
+def parse_joint(params, result, args, io)
+  # xxx: parse args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'joint', line: line, segs: segs }
+  result << { type: 'joint', args: args, segs: segs }
 end
 
-def parse_straight(params, result, line, io)
-  # xxx: parse line
+def parse_straight(params, result, args, io)
+  # xxx: parse args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'straight', line: line, segs: segs }
+  result << { type: 'straight', args: args, segs: segs }
 end
 
-def parse_curve(params, result, line, io)
-  # xxx: parse line
+def parse_curve(params, result, args, io)
+  # xxx: parse args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'curve', line: line, segs: segs }
+  result << { type: 'curve', args: args, segs: segs }
 end
 
-def parse_note(params, result, line, io)
-  if /\AMAIN/ =~ line
+def parse_note(params, result, args, io)
+  if /\AMAIN/ =~ args
     size = get_args(params[:version] < 3 ? 'd' : '000d', $')
   else
     index, layer, pos, elev, size = get_args(
       params[:version] < 3 ? 'XXpYd' :
       params[:version] < 9 ? 'dL00pYd' : 'dL00pfd',
-      line)
+      args)
   end
   text = ''
   while /\A    END/ !~ (line = io.gets)
@@ -284,27 +286,27 @@ def parse_note(params, result, line, io)
   result << h
 end
 
-def parse_tableedge(params, result, line, io)
+def parse_tableedge(params, result, args, io)
   index, layer, pos0, elev0, pos1, elev1 = get_args(
     params[:version] < 3 ? "dXpYpY" :
     params[:version] < 9 ? "dL000pYpY" : "dL000pfpf",
-    line)
+    args)
   result << { type:'tableedge', index:index, layer:layer, pos0:pos0, pos1:pos1 }
 end
 
-def parse_text(params, result, line, io)
+def parse_text(params, result, args, io)
   index, layer, pos, angle, text, text_size = get_args(
     params[:version] < 3 ? "XXpYql" :
     params[:version] < 9 ? "dL000pYql" : "dL000pfql",
-    line)
+    args)
   result << { type:'text', index:index, layer:layer, pos:pos, angle:angle, text:text, text_size:text_size }
 end
 
-def parse_car(params, result, line, io)
+def parse_car(params, result, args, io)
   item_index, scale, title, options, type,
     car_length, car_width, truck_center, coupled_length, rgb,
     purch_price, curr_price, condition, purch_date, service_date,
-    args = get_args("lsqll" "ff00ffl" "fflll000000c", line)
+    args = get_args("lsqll" "ff00ffl" "fflll000000c", args)
   if (options & CAR_ITEM_HASNOTES) != 0
     notes = ''
     while /\A    END/ !~ (line = io.gets)
@@ -331,8 +333,8 @@ def parse_car(params, result, line, io)
   result << h
 end
 
-def parse_track(params, result, line, io)
-  case line
+def parse_track(params, result, args, io)
+  case args
   #when /\ANOTRACK/
   when /\AJOINT/
     parse_joint(params, result, $', io)
