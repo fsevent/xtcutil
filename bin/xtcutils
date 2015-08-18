@@ -3,6 +3,7 @@
 # usage:
 #   xtcutils help
 #   xtcutils json file.xtc
+#   xtcutils show file.xtc
 
 require 'pp'
 
@@ -11,6 +12,7 @@ def main_help(argv)
 usage:
   xtcutils help
   xtcutils json file.xtc
+  xtcutils show file.xtc
 End
 end
 
@@ -24,6 +26,8 @@ def main(argv)
     main_help(argv)
   when 'json'
     require 'xtcutils/cmd_json'; main_json(argv)
+  when 'show'
+    require 'xtcutils/cmd_show'; main_show(argv)
   else
     $stderr.print "unexpected subcommand: #{subcommand}"
     exit false
