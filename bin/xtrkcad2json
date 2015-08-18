@@ -48,7 +48,7 @@ def get_args(format, str)
       if $2
         ret << "#{$1}#{$2}".to_f
       else
-        ret << $1.to_i / dpi # xxx
+        ret << $1.to_i / 1440.0 # 1440.0 may be invalid.
       end
       str = $'
     when /\Ap/
@@ -202,67 +202,204 @@ end
 
 def parse_turnout(params, result, args, io)
   if params[:version] < 3
-    index, layer, scale, visible, orig, angle, title = get_args('dXsdpfq', args)
+    options = 0
+    position = 0
+    index, layer,                    scale, visible, orig,       angle, title = get_args('dXsdpfq', args)
   elsif params[:version] < 9
     index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpYfq', args)
   else
     index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpffq', args)
   end
-  # xxx: record parsed args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'turnout', args: args, segs: segs }
+  h = {
+    type:'turnout',
+    index:index,
+    layer:layer,
+    options:options,
+    width:options&3,
+    handlaid:(options&0x08)!=0,
+    flipped:(options&0x10)!=0,
+    ungrouped:(options&0x20)!=0,
+    split:(options&0x40)!=0,
+    hidedesc:(options&0x80)!=0,
+    position:position,
+    scale:scale,
+    visible:visible,
+    orig:orig,
+    angle:angle,
+    title:title,
+    segs:segs
+  }
+  result << h
 end
 
 def parse_turntable(params, result, args, io)
-  # xxx: parse args
+  if params[:version] < 3
+    index, layer, scale, visible, pos, elev, radius, curr_ep = get_args('dXsdpYfX', args)
+  elsif params[:version] < 9
+    index, layer, scale, visible, pos, elev, radius, curr_ep = get_args('dL000sdpYfX', args)
+  elsif params[:version] < 10
+    index, layer, scale, visible, pos, elev, radius, curr_ep = get_args('dL000sdpffX', args)
+  else
+    index, layer, scale, visible, pos, elev, radius, curr_ep = get_args('dL000sdpffd', args)
+  end
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'turntable', args: args, segs: segs }
+  h = {
+    type:'turntable',
+    index:index,
+    layer:layer,
+    scale:scale,
+    visible:visible,
+    pos:pos,
+    radius:radius,
+    curr_ep:curr_ep,
+    segs:segs
+  }
+  result << h
 end
 
 def parse_structure(params, result, args, io)
   if params[:version] < 3
-    index, layer, scale, visible, orig, angle, title = get_args('dXsdpfq', args)
+    options = 0
+    position = 0
+    index, layer,                    scale, visible, orig,       angle, title = get_args('dXsdpfq', args)
   elsif params[:version] <= 5
-    index, layer, scale, visible, orig, angle, title = get_args('dL00sdpfq', args)
+    index, layer,                    scale, visible, orig,       angle, title = get_args('dL00sdpfq', args)
   elsif params[:version] < 9
     index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpYfq', args)
   else
     index, layer, options, position, scale, visible, orig, elev, angle, title = get_args('dLll0sdpffq', args)
   end
-  # xxx: record parsed args
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'structure', args: args, segs: segs }
+  h = {
+    type:'structure',
+    index:index,
+    layer:layer,
+    options:options,
+    width:options&3,
+    handlaid:(options&0x08)!=0,
+    flipped:(options&0x10)!=0,
+    ungrouped:(options&0x20)!=0,
+    split:(options&0x40)!=0,
+    hidedesc:(options&0x80)!=0,
+    position:position,
+    scale:scale,
+    visible:visible,
+    orig:orig,
+    angle:angle,
+    title:title,
+    segs:segs
+  }
+  result << h
 end
 
 def parse_draw(params, result, args, io)
-  # xxx: parse args
+  if params[:version] < 3
+    index, layer, orig, elev, angle = get_args("dXpYf", args)
+  elsif params[:version] < 9
+    index, layer, orig, elev, angle = get_args("dL000pYf", args)
+  else
+    index, layer, orig, elev, angle = get_args("dL000pff", args)
+  end
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'draw', args: args, segs: segs }
+  h = {
+    type:'draw',
+    index:index,
+    layer:layer,
+    orig:orig,
+    angle:angle,
+    segs:segs
+  }
+  result << h
 end
 
 def parse_joint(params, result, args, io)
-  # xxx: parse args
+  if params[:version] < 3
+    index, layer, options, scale, visible, l0, l1, r, l, flip, negate, scurve, pos, elev, angle = get_args("dXZsdffffdddpYf", args)
+  elsif params[:version] < 9
+    index, layer, options, scale, visible, l0, l1, r, l, flip, negate, scurve, pos, elev, angle = get_args("dLl00sdffffdddpYf", args)
+  else
+    index, layer, options, scale, visible, l0, l1, r, l, flip, negate, scurve, pos, elev, angle = get_args("dLl00sdffffdddpff", args)
+  end
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'joint', args: args, segs: segs }
+  h = {
+    type:'joint',
+    index:index,
+    layer:layer,
+    options:options,
+    width:options&3,
+    scale:scale,
+    visible:visible,
+    l0:l0,
+    l1:l1,
+    r:r,
+    l:l,
+    flip:flip,
+    negate:negate,
+    scurve:scurve,
+    pos:pos,
+    angle:angle,
+    segs: segs
+  }
+  result << h
 end
 
 def parse_straight(params, result, args, io)
-  # xxx: parse args
+  if params[:version] < 3
+    index, layer, options, scale, visible = get_args("dXZsd", args)
+  else
+    index, layer, options, scale, visible = get_args("dLl00sd", args)
+  end
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'straight', args: args, segs: segs }
+  h = {
+    type:'straight',
+    index:index,
+    layer:layer,
+    options:options,
+    width:options&3,
+    scale:scale,
+    visible:visible,
+    segs:segs
+  }
+  result << h
 end
 
 def parse_curve(params, result, args, io)
-  # xxx: parse args
+  if params[:version] < 3
+    index, layer, options, scale, visible, pos, elev, radius, args = get_args("dXZsdpYfc", args)
+  elsif params[:version] < 9
+    index, layer, options, scale, visible, pos, elev, radius, args = get_args("dLl00sdpYfc", args)
+  else
+    index, layer, options, scale, visible, pos, elev, radius, args = get_args("dLl00sdpffc", args)
+  end
+  if /\S/ =~ args
+    helix_turns, description_off = get_args("lp", args)
+  else
+    helix_turns = 0
+    description_off = [0.0, 0.0]
+  end
   segs = []
   parse_segs(params, segs, io)
-  result << { type: 'curve', args: args, segs: segs }
+  h = {
+    type:'curve',
+    index:index,
+    layer:layer,
+    options:options,
+    width:options&3,
+    hidedesc:(options&0x80)!=0,
+    pos:pos,
+    radius:radius,
+    helix_turns:helix_turns,
+    description_off:description_off,
+    segs:segs
+  }
+  result << h
 end
 
 def parse_note(params, result, args, io)
@@ -287,18 +424,24 @@ def parse_note(params, result, args, io)
 end
 
 def parse_tableedge(params, result, args, io)
-  index, layer, pos0, elev0, pos1, elev1 = get_args(
-    params[:version] < 3 ? "dXpYpY" :
-    params[:version] < 9 ? "dL000pYpY" : "dL000pfpf",
-    args)
+  if params[:version] < 3
+    index, layer, pos0, elev0, pos1, elev1 = get_args("dXpYpY", args)
+  elsif params[:version] < 9
+    index, layer, pos0, elev0, pos1, elev1 = get_args("dL000pYpY", args)
+  else
+    index, layer, pos0, elev0, pos1, elev1 = get_args("dL000pfpf", args)
+  end
   result << { type:'tableedge', index:index, layer:layer, pos0:pos0, pos1:pos1 }
 end
 
 def parse_text(params, result, args, io)
-  index, layer, pos, angle, text, text_size = get_args(
-    params[:version] < 3 ? "XXpYql" :
-    params[:version] < 9 ? "dL000pYql" : "dL000pfql",
-    args)
+  if params[:version] < 3
+    index, layer, pos, angle, text, text_size = get_args("XXpYql", args)
+  elsif params[:version] < 9
+    index, layer, pos, angle, text, text_size = get_args("dL000pYql", args)
+  else
+    index, layer, pos, angle, text, text_size = get_args("dL000pfql", args)
+  end
   result << { type:'text', index:index, layer:layer, pos:pos, angle:angle, text:text, text_size:text_size }
 end
 
@@ -318,11 +461,18 @@ def parse_car(params, result, args, io)
     segs = []
     parse_segs(params, segs, io)
   end
-  h = { type:'car',
-        car_length:car_length, car_width:car_width,
-        truck_center:truck_center, coupled_length:coupled_length, rgb:rgb,
-        purch_price:purch_price, curr_price:curr_price,
-        condition:condition, purch_date:purch_date, service_date:service_date,
+  h = {
+    type:'car',
+    car_length:car_length,
+    car_width:car_width,
+    truck_center:truck_center,
+    coupled_length:coupled_length,
+    rgb:rgb,
+    purch_price:purch_price,
+    curr_price:curr_price,
+    condition:condition,
+    purch_date:purch_date,
+    service_date:service_date,
   }
   h[:notes] = notes if notes
   h[:index] = index if index
