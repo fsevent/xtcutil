@@ -562,3 +562,11 @@ def parse_io(params, result, io)
   end
   result
 end
+
+def open_xtc(filename, &b)
+  enc = Encoding.find("locale")
+  if !File.read(filename, external_endoding:enc).valid_encoding?
+    enc = Encoding::ISO_8859_1
+  end
+  File.open(filename, :external_encoding=>enc, &b)
+end
