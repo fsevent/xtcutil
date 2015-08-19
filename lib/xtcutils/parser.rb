@@ -148,8 +148,8 @@ def parse_segs(params, segs, io)
         end
         pos, angle, args = get_args('pfc', args)
         elev_option = 0
-        elev_height = 0.0
-        elev_doff = [0.0, 0.0]
+        elev_height = nil
+        elev_doff = nil
         option = 0
         if /\S/ =~ args
           if params[:version] < 7
@@ -172,8 +172,8 @@ def parse_segs(params, segs, io)
         seg[:angle] = angle
         seg[:option] = option
         seg[:elev_option] = elev_option
-        seg[:elev_height] = elev_height
-        seg[:elev_doff] = elev_doff
+        seg[:elev_height] = elev_height if elev_height
+        seg[:elev_doff] = elev_doff if elev_doff
         seg[:station_name] = station_name if station_name
         segs << seg
       when 'P' # SEG_PATH
