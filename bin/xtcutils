@@ -9,6 +9,7 @@ usage:
   xtcutils json file.xtc
   xtcutils show file.xtc
   xtcutils pdf file.xtc
+  xtcutils png file.xtc
 End
 end
 
@@ -26,6 +27,8 @@ def main(argv)
     require 'xtcutils/cmd_show'; main_show(argv)
   when 'pdf'
     require 'xtcutils/cmd_pdf'; main_pdf(argv)
+  when 'png'
+    require 'xtcutils/cmd_png'; main_png(argv)
   else
     $stderr.print "unexpected subcommand: #{subcommand}"
     exit false
