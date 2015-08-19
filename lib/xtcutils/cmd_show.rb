@@ -62,6 +62,6 @@ def main_show(argv)
     parse_io params, parsed, f
   }
   Gtk.init
-  window = XTCWindow.new(Layout.new(parsed))
+  XTCWindow.new(Layout.new(parsed))
   Gtk.main
 end

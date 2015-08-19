@@ -116,7 +116,7 @@ def parse_segs(params, segs, io)
         negate = (option&1) != 0
         flip = (option&2)!= 0
         scurve = (option&4) != 0
-        segs << { type:type, color:color_from_rgb(rgb), width:width, pos:pos, angle:angle, l0:l, R:r, L:l, negate:negate, filp:flip, scurve:scurve }
+        segs << { type:type, color:color_from_rgb(rgb), width:width, pos:pos, angle:angle, l0:l0, l1:l1, R:r, L:l, negate:negate, filp:flip, scurve:scurve }
       when 'G' # SEG_FILCRCL
         rgb, width, radius, center, elev0 = get_args(has_elev ? "lwfpf":"lwfpY", args)
         a0 = 0.0;
@@ -160,9 +160,9 @@ def parse_segs(params, segs, io)
             option >>= 8
             case elev_option & ELEV_MASK
             when ELEV_DEF
-              height, args = get_args('fc', args)
+              elev_height, args = get_args('fc', args)
             when ELEV_STATION
-              name, args = get_args('qc', args)
+              station_name, args = get_args('qc', args)
             end
           end
         end
@@ -174,6 +174,7 @@ def parse_segs(params, segs, io)
         seg[:elev_option] = elev_option
         seg[:elev_height] = elev_height
         seg[:elev_doff] = elev_doff
+        seg[:station_name] = station_name if station_name
         segs << seg
       when 'P' # SEG_PATH
         if /\A"([^"]*)"\s*/ !~ args
@@ -406,7 +407,7 @@ def parse_note(params, result, args, io)
   if /\AMAIN/ =~ args
     size = get_args(params[:version] < 3 ? 'd' : '000d', $')
   else
-    index, layer, pos, elev, size = get_args(
+    index, layer, pos, _elev, size = get_args(
       params[:version] < 3 ? 'XXpYd' :
       params[:version] < 9 ? 'dL00pYd' : 'dL00pfd',
       args)
@@ -463,6 +464,11 @@ def parse_car(params, result, args, io)
   end
   h = {
     type:'car',
+    item_index:item_index,
+    scale:scale,
+    title:title,
+    options:options,
+    car_type:type,
     car_length:car_length,
     car_width:car_width,
     truck_center:truck_center,
