@@ -3,8 +3,6 @@ require 'gtk3'
 require 'xtcutils'
 require 'xtcutils/cairo'
 
-DEG_TO_RAD = Math::PI / 180
-
 class XTCWindow < Gtk::Window
   def initialize(layout)
     @layout = layout
