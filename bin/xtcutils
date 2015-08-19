@@ -1,10 +1,5 @@
 #!/usr/bin/ruby
 
-# usage:
-#   xtcutils help
-#   xtcutils json file.xtc
-#   xtcutils show file.xtc
-
 require 'pp'
 
 def main_help(argv)
@@ -13,6 +8,7 @@ usage:
   xtcutils help
   xtcutils json file.xtc
   xtcutils show file.xtc
+  xtcutils pdf file.xtc
 End
 end
 
@@ -28,6 +24,8 @@ def main(argv)
     require 'xtcutils/cmd_json'; main_json(argv)
   when 'show'
     require 'xtcutils/cmd_show'; main_show(argv)
+  when 'pdf'
+    require 'xtcutils/cmd_pdf'; main_pdf(argv)
   else
     $stderr.print "unexpected subcommand: #{subcommand}"
     exit false
