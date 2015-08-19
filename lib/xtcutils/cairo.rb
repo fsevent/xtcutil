@@ -25,8 +25,15 @@ def cairo_draw_layout layout, ctx
       ctx.set_source_rgb(0, 0, 0)
       cx, cy = h[:pos]
       radius = h[:radius]
-      a0 = (-h[:segs][0][:angle]) * DEG_TO_RAD
-      a1 = (180-h[:segs][1][:angle]) * DEG_TO_RAD
+      a0 = h[:segs][0][:angle]
+      a1 = h[:segs][1][:angle]
+      if a0 == 270 && a1 == 90
+        a0 = 2*Math::PI
+        a1 = 0.0
+      else
+        a0 = (-a0) * DEG_TO_RAD
+        a1 = (180-a1) * DEG_TO_RAD
+      end
       ctx.arc(cx, cy, radius, a1, a0)
       ctx.stroke
     when 'turnout'
