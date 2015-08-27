@@ -4,7 +4,9 @@ ELEV_COMP = 2
 ELEV_GRADE = 3
 ELEV_IGNORE = 4
 ELEV_STATION = 5
+
 ELEV_MASK = 0x07
+ELEV_VISIBLE = 0x08
 
 CAR_ITEM_HASNOTES = (1<<8)
 CAR_ITEM_ONLAYOUT = (1<<9)
@@ -147,7 +149,9 @@ def parse_segs(params, segs, io)
           index = nil
         end
         pos, angle, args = get_args('pfc', args)
-        elev_option = 0
+        elev_option = nil
+        elev_type = nil
+        elev_visible = nil
         elev_height = nil
         elev_doff = nil
         station_name = nil
@@ -160,10 +164,25 @@ def parse_segs(params, segs, io)
             elev_option = option & 0xff
             option >>= 8
             case elev_option & ELEV_MASK
+            when ELEV_NONE
+              elev_type = "None"
             when ELEV_DEF
+              elev_type = "Defined"
               elev_height, args = get_args('fc', args)
+            when ELEV_COMP
+              elev_type = "Computed"
+            when ELEV_GRADE
+              elev_type = "Grade"
+            when ELEV_IGNORE
+              elev_type = "Ignore"
             when ELEV_STATION
+              elev_type = "Station"
               station_name, args = get_args('qc', args)
+            end
+            if (elev_option & ELEV_VISIBLE) != 0
+              elev_visible = true
+            else
+              elev_visible = false
             end
           end
         end
@@ -172,7 +191,9 @@ def parse_segs(params, segs, io)
         seg[:pos] = pos
         seg[:angle] = angle
         seg[:option] = option
-        seg[:elev_option] = elev_option
+        seg[:elev_option] = elev_option if elev_option
+        seg[:elev_type] = elev_type if elev_type
+        seg[:elev_visible] = elev_visible if !elev_visible.nil?
         seg[:elev_height] = elev_height if elev_height
         seg[:elev_doff] = elev_doff if elev_doff
         seg[:station_name] = station_name if station_name
