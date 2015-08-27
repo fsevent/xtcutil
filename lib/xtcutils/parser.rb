@@ -150,6 +150,7 @@ def parse_segs(params, segs, io)
         elev_option = 0
         elev_height = nil
         elev_doff = nil
+        station_name = nil
         option = 0
         if /\S/ =~ args
           if params[:version] < 7
@@ -181,8 +182,12 @@ def parse_segs(params, segs, io)
           raise "quoted name expected: #{args}"
         end
         name = $1
-        path = $'.split(/\s+/).map {|s| s.to_i }
-        segs << { type:type, name:name, path:path }
+        nums = $'.split(/\s+/).map {|s| s.to_i }
+        paths = nums.slice_before(0).to_a
+        paths.each {|path|
+          path.shift if path[0] == 0
+        }
+        segs << { type:type, name:name, paths:paths }
       when 'X' # SEG_SPEC
         temp_special = args
         segs << { type:type, special:temp_special }
