@@ -27,4 +27,8 @@ class CurveLine < AbstractLine
     return @pos1
   end
 
+  def distance
+    @radius * (@a1 - @a0)
+  end
+
 end

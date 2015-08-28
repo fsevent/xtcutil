@@ -6,6 +6,16 @@ class AbstractLine
     @nodes = [nil, nil]
   end
 
+  def pretty_print_instance_variables
+    instance_variables.sort - [:@part]
+  end
+
+  def pretty_print(q)
+    q.pp_object(self)
+  end
+
+  alias inspect pretty_print_inspect
+
   def get_pos(i)
     raise "unexpected pos index: #{i}" if i != 0 && i != 1
     if i == 0
@@ -32,8 +42,8 @@ class AbstractLine
   def set_node(i, node)
     raise "unexpected node index: #{i}" if i != 0 && i != 1
     raise "node#{i} already set: #{@nodes[i]}" if @nodes[i]
-    node.add_line(self, i)
     @nodes[i] = node
+    node.add_line(i, self)
   end
 
   def get_node(i)

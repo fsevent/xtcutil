@@ -21,14 +21,18 @@ class Node
       q.breakable
       q.text(@name || "(#{self.object_id})")
       if center
-        q.text("(%.2f,%.2f)" % [center[0], center[1]])
+        if @height
+          q.text("(%.2f,%.2f,%.2f)" % [center[0], center[1], @height])
+        else
+          q.text("(%.2f,%.2f)" % [center[0], center[1]])
+        end
         if 0.1 < error
-          q.text("{%.3g}" % error)
+          q.text("{error=%.3g}" % error)
         end
       end
       if !@lines.empty?
         q.text ":"
-        each_line {|line, posindex|
+        each_line {|posindex, line|
           n = line.get_node(1-posindex)
           if n
             n_name = n.get_node_name || "(#{n.object_id})"
@@ -42,7 +46,7 @@ class Node
     }
   end
 
-  alias pretty_print_inspect inspect
+  alias inspect pretty_print_inspect
 
   def unify_node(node)
     return unified_node.unify_node(node) if @unified
@@ -62,8 +66,8 @@ class Node
     if @height && !node_height
       node.set_node_height(@height)
     end
-    @lines.each {|line, posindex|
-      node.add_line(line, posindex)
+    @lines.each {|posindex, line|
+      node.add_line(posindex, line)
     }
     @unified = node
     @name = nil
@@ -109,23 +113,29 @@ class Node
     @height
   end
 
-  def add_line(line, posindex)
+  # line.get_node(posindex) should be self.
+  def add_line(posindex, line)
     return unified_node.add_line(line, posindex) if @unified
-    @lines << [line, posindex]
+    @lines << [posindex, line]
   end
 
-  def each_line(&b)
+  def each_line(&b) # :yields: line, posindex
     return unified_node.each_line(&b) if @unified
-    @lines.each {|line, posindex|
-      yield line, posindex
+    @lines.each {|posindex, line|
+      yield posindex, line
     }
+  end
+
+  def num_lines
+    return unified_node.num_lines if @unified
+    @lines.length
   end
 
   def mean_pos
     x = 0.0
     y = 0.0
     n = 0
-    each_line {|line, posindex|
+    each_line {|posindex, line|
       n += 1
       pos = line.get_pos(posindex)
       x += pos[0]
@@ -142,7 +152,7 @@ class Node
     center = mean_pos
     return nil if !center
     error = 0.0
-    each_line {|line, posindex|
+    each_line {|posindex, line|
       pos = line.get_pos(posindex)
       e = hypot_pos(pos, center)
       error = e if error < e

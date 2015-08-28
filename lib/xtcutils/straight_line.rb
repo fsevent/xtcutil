@@ -18,4 +18,8 @@ class StraightLine < AbstractLine
     return @pos1 = [@x1, @y1].freeze
   end
 
+  def distance
+    hypot_pos(pos0, pos1)
+  end
+
 end
