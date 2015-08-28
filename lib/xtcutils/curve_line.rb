@@ -1,5 +1,6 @@
-class CurveLine
-  def initialize(cx, cy, radius, a0, a1)
+class CurveLine < AbstractLine
+  def initialize(part, cx, cy, radius, a0, a1)
+    super part
     @cx = cx
     @cy = cy
     @radius = radius
@@ -7,4 +8,23 @@ class CurveLine
     @a1 = a1
   end
   attr_reader :cx, :cy, :radius, :a0, :a1
+
+  def pos0
+    return @pos0 if defined? @pos0
+    @pos0 = [
+      @cx + @radius * Math.cos(@a0),
+      @cy + @radius * Math.sin(@a0)
+    ]
+    return @pos0
+  end
+
+  def pos1
+    return @pos1 if defined? @pos1
+    @pos1 = [
+      @cx + @radius * Math.cos(@a1),
+      @cy + @radius * Math.sin(@a1)
+    ]
+    return @pos1
+  end
+
 end

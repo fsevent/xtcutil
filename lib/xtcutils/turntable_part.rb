@@ -1,13 +1,4 @@
-class TurntablePart
-  def initialize(layout, h)
-    @layout = layout
-    @h = h
-  end
-
-  def index
-    @h[:index].to_int
-  end
-
+class TurntablePart < AbstractPart
   def lines
     return @lines if defined? @lines
     cx, cy = @h[:pos]
@@ -23,7 +14,7 @@ class TurntablePart
         y0 = cy + radius * c
         x1 = cx - radius * s
         y1 = cy - radius * c
-        ary << StraightLine.new(x0, y0, x1, y1)
+        ary << StraightLine.new(self, x0, y0, x1, y1)
       end
     }
     return @lines = ary
@@ -32,4 +23,22 @@ class TurntablePart
   def each_track(&b)
     lines.each(&b)
   end
+
+  def paths_ary
+    return @paths_ary if defined? @paths_ary
+    ary = []
+    a = 0
+    lines.each {|l|
+      name = "a#{a += 1}"
+      ary << [name, [[l]]]
+    }
+    return @paths_ary = ary
+  end
+
+  def each_state_paths
+    paths_ary.each {|name, paths|
+      yield name, paths
+    }
+  end
+
 end

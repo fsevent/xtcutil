@@ -31,3 +31,7 @@ def rotate_angle(mat, rad)
   rad + Math.atan2(s, c)
 end
 
+def hypot_pos(pos0, pos1)
+  Math.hypot(pos0[0] - pos1[0], pos0[1] - pos1[1])
+end
+

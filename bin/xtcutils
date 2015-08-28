@@ -23,6 +23,8 @@ def main(argv)
     main_help(argv)
   when 'json'
     require 'xtcutils/cmd_json'; main_json(argv)
+  when 'graph'
+    require 'xtcutils/cmd_graph'; main_graph(argv)
   when 'show'
     require 'xtcutils/cmd_show'; main_show(argv)
   when 'pdf'
