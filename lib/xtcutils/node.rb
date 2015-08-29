@@ -1,8 +1,7 @@
 class Node
   def initialize
     @unified = nil
-    @name = nil
-    @height = nil
+    @attrs = {}
     @lines = []
   end
 
@@ -19,10 +18,10 @@ class Node
     error = max_error
     q.object_group(self) {
       q.breakable
-      q.text(@name || "(#{self.object_id})")
+      q.text(get_node_name || "(#{self.object_id})")
       if center
-        if @height
-          q.text("(%.2f,%.2f,%.2f)" % [center[0], center[1], @height])
+        if get_node_height
+          q.text("(%.2f,%.2f,%.2f)" % [center[0], center[1], get_node_height])
         else
           q.text("(%.2f,%.2f)" % [center[0], center[1]])
         end
@@ -54,64 +53,51 @@ class Node
     if self.equal?(node)
       return
     end
-    if @name && (node_name = node.name) && @name != node_name
-      raise ArgumentError, "different name nodes not unifiable: #{@name.inspect} and #{node_name}"
-    end
-    if @name && !node_name
-      node.set_node_name(@name)
-    end
-    if @height && (node_height = node.height) && @height != node_height
-      raise ArgumentError, "different height nodes not unifiable: #{@height.inspect} and #{node_height}"
-    end
-    if @height && !node_height
-      node.set_node_height(@height)
-    end
+    @attrs.each {|k, v1|
+      if node.attrs.has_key?(k) && v1 != (v2 = node.attrs[k])
+        raise ArgumentError, "different attribute nodes not unifiable: #{k} : #{v1.inspect} and #{v2.inspect}"
+      end
+    }
+    @attrs.each {|k, v1|
+      if !node.attrs.has_key?(k)
+        node.set_attr(k, v1)
+      end
+    }
     @lines.each {|posindex, line|
       node.add_line(posindex, line)
     }
     @unified = node
-    @name = nil
-    @height = nil
+    @attrs = nil
     @lines = nil
   end
 
-  def set_node_name(name)
-    return unified_node.set_node_name(name) if @unified
-    if @name && @name != name
-      raise "different node name already set: #{name} #{@name}"
+  def set_attr(k, v)
+    return unified_node.set_attr(k, v) if @unified
+    if @attrs.has_key?(k) && @attrs[k] != v
+      raise "cannot set node  attribute: #{k} : #{v.inspect} (already set: #{@attrs[k]}.inspect)"
     end
-    @name = name
+    @attrs[k] = v
+    nil
   end
 
-  def get_node_name
+  def get_attr(k)
+    return unified_node.get_attr(k) if @unified
+    @attrs[k]
+  end
+
+  def fetch_attr(k)
     return unified_node.fetch_node_name if @unified
-    @name
+    raise "attribute not set: #{k}" if !@attrs.has_key(k)
+    @attrs[k]
   end
 
-  def fetch_node_name
-    return unified_node.fetch_node_name if @unified
-    raise "node name not set" if !@name
-    @name
-  end
+  def set_node_name(name) set_attr(:node_name, name) end
+  def get_node_name() get_attr(:node_name) end
+  def fetch_node_name() fetch_attr(:node_name) end
 
-  def set_node_height(height)
-    return unified_node.set_node_height(height) if @unified
-    if @height && @height != height
-      raise "different node height already set: #{height} #{@height}"
-    end
-    @height = height
-  end
-
-  def get_node_height
-    return unified_node.fetch_node_height if @unified
-    @height
-  end
-
-  def fetch_node_height
-    return unified_node.fetch_node_height if @unified
-    raise "node height not set" if !@height
-    @height
-  end
+  def set_node_height(name) set_attr(:node_height, name) end
+  def get_node_height() get_attr(:node_height) end
+  def fetch_node_height() fetch_attr(:node_height) end
 
   # line.get_node(posindex) should be self.
   def add_line(posindex, line)
