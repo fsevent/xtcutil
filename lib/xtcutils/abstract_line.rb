@@ -2,9 +2,9 @@ class AbstractLine
   def initialize(part)
     @part = part
     @line_name = nil
-    @pos_name = [nil, nil]
     @nodes = [nil, nil]
   end
+  attr_reader :part
 
   def pretty_print_instance_variables
     instance_variables.sort - [:@part]

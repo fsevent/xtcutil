@@ -57,6 +57,7 @@ class Layout
     node_ary = []
     setup_inter_part_node(node_ary)
     setup_intra_part_node(node_ary)
+    setup_other_node(node_ary)
     node_ary = clean_nodes(node_ary)
     setup_node_name(node_ary)
     setup_elevation(node_ary)
@@ -193,12 +194,26 @@ class Layout
     end
   end
 
+  def setup_other_node(node_ary)
+    each_part {|part|
+      part.each_track {|line|
+        0.upto(1) {|i|
+          if !line.get_node(i)
+            node = Node.new
+            line.set_node(i, node)
+            node_ary << node
+          end
+        }
+      }
+    }
+  end
+
   def clean_nodes(node_ary)
     node_ary = node_ary.reject {|node| !node.equal?(node.unified_node) }
     node_ary.each {|node|
       node.each_line {|posindex, line|
-        line.fetch_node(0)
-        line.fetch_node(1)
+        n0 = line.fetch_node(0)
+        n1 = line.fetch_node(1)
       }
     }
   end

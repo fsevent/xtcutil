@@ -22,8 +22,8 @@ class StraightLine
   end
 
   def cairo_draw3d(ctx, zscale)
-    n0 = self.get_node(0)
-    n1 = self.get_node(1)
+    n0 = self.fetch_node(0)
+    n1 = self.fetch_node(1)
     h0 = ((n0 ? n0.get_node_height : nil) || 0.0) * zscale
     h1 = ((n1 ? n1.get_node_height : nil) || 0.0) * zscale
     cairo_draw_height(ctx, @x0, @y0, h0, n0)

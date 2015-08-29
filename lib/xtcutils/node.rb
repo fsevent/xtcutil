@@ -21,9 +21,9 @@ class Node
       q.text(get_node_name || "(#{self.object_id})")
       if center
         if get_node_height
-          q.text("(%.2f,%.2f,%.2f)" % [center[0], center[1], get_node_height])
+          q.text("(%.3f,%.3f,%.3f)" % [center[0], center[1], get_node_height])
         else
-          q.text("(%.2f,%.2f)" % [center[0], center[1]])
+          q.text("(%.3f,%.3f)" % [center[0], center[1]])
         end
         if 0.1 < error
           q.text("{error=%.3g}" % error)
