@@ -30,7 +30,7 @@ class Node
         end
       end
       if get_attr(:defined_height)
-        q.text "(defined_height)"
+        q.text "(zdef)"
       end
       if !@lines.empty?
         q.text ":"

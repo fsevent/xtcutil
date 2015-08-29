@@ -59,6 +59,7 @@ class Layout
     setup_intra_part_node(node_ary)
     setup_other_node(node_ary)
     node_ary = clean_nodes(node_ary)
+    node_ary = reorder_nodes(node_ary)
     setup_node_name(node_ary)
     setup_elevation(node_ary)
     @node_ary = node_ary
@@ -216,6 +217,32 @@ class Layout
         n1 = line.fetch_node(1)
       }
     }
+  end
+
+  def reorder_nodes(node_ary)
+    h = {}
+    [
+      lambda {|n| n.num_lines < 2 },
+      lambda {|n| n.num_lines > 2 },
+      lambda {|n| true },
+    ].each {|node_selector|
+      node_ary.each {|n0|
+        next if h.has_key? n0
+        if node_selector.call(n0)
+          q = [n0]
+          until q.empty?
+            n1 = q.pop
+            h[n1] = h.size
+            n1.each_line {|posindex, line|
+              n2 = line.get_node(1-posindex)
+              next if h.has_key? n2
+              q.push n2
+            }
+          end
+        end
+      }
+    }
+    h.keys # sorted by the hash value
   end
 
   def setup_node_name(node_ary)
