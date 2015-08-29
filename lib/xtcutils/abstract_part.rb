@@ -6,6 +6,16 @@ class AbstractPart
     @endpoint_node.compare_by_identity
   end
 
+  def pretty_print_instance_variables
+    instance_variables.sort - [:@layout]
+  end
+
+  def pretty_print(q)
+    q.pp_object(self)
+  end
+
+  alias inspect pretty_print_inspect
+
   def index
     @h[:index].to_int
   end
