@@ -29,6 +29,9 @@ class Node
           q.text("{error=%.3g}" % error)
         end
       end
+      if get_attr(:defined_height)
+        q.text "(defined_height)"
+      end
       if !@lines.empty?
         q.text ":"
         each_line {|posindex, line|

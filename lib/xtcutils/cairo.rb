@@ -1,5 +1,19 @@
 require 'cairo'
 
+def cairo_draw_height(ctx, x, y, h, node)
+  ctx.save {
+    ctx.set_line_width 0.1
+    if node.get_attr(:defined_height)
+      ctx.set_source_color("red")
+    else
+      ctx.set_source_color("black")
+    end
+    ctx.move_to(x, y)
+    ctx.line_to(x, y + h)
+    ctx.stroke
+  }
+end
+
 class StraightLine
   def cairo_draw(ctx)
     ctx.move_to(@x0, @y0)
@@ -12,15 +26,8 @@ class StraightLine
     n1 = self.get_node(1)
     h0 = ((n0 ? n0.get_node_height : nil) || 0.0) * zscale
     h1 = ((n1 ? n1.get_node_height : nil) || 0.0) * zscale
-    ctx.save {
-      ctx.set_line_width 0.1
-      ctx.move_to(@x0, @y0)
-      ctx.line_to(@x0, @y0 + h0)
-      ctx.stroke
-      ctx.move_to(@x1, @y1)
-      ctx.line_to(@x1, @y1 + h1)
-      ctx.stroke
-    }
+    cairo_draw_height(ctx, @x0, @y0, h0, n0)
+    cairo_draw_height(ctx, @x1, @y1, h1, n1)
     ctx.move_to(@x0, @y0 + h0)
     ctx.line_to(@x1, @y1 + h1)
     ctx.stroke
@@ -40,15 +47,8 @@ class CurveLine
     h1 = ((n1 ? n1.get_node_height : nil) || 0.0) * zscale
     x0, y0 = pos0
     x1, y1 = pos1
-    ctx.save {
-      ctx.set_line_width 0.1
-      ctx.move_to(x0, y0)
-      ctx.line_to(x0, y0 + h0)
-      ctx.stroke
-      ctx.move_to(x1, y1)
-      ctx.line_to(x1, y1 + h1)
-      ctx.stroke
-    }
+    cairo_draw_height(ctx, x0, y0, h0, n0)
+    cairo_draw_height(ctx, x1, y1, h1, n1)
     ctx.save {
       nstep = 20
       ctx.move_to @cx + @radius * Math.cos(@a0),
