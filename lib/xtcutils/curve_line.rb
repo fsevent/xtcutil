@@ -1,5 +1,6 @@
 class CurveLine < AbstractLine
   def initialize(part, cx, cy, radius, a0, a1)
+    raise "curveline constraint violation: #{a0} > #{a1} (should be a0 <= a1)" if a0 > a1
     super part
     @cx = cx
     @cy = cy

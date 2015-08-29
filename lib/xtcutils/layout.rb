@@ -348,7 +348,8 @@ class Layout
         total_height += weight * defined_height
         total_weight += weight
       }
-      n.set_node_height(total_height / total_weight)
+      height = total_height / total_weight
+      n.set_node_height(height)
     }
   end
 

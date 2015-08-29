@@ -12,6 +12,9 @@ class CurvePart < AbstractPart
       a0 = (180-a0) * DEG_TO_RAD
       a1 = (-a1) * DEG_TO_RAD
     end
+    while a0 > a1
+      a1 += 2*Math::PI
+    end
     ary = [CurveLine.new(self, cx, cy, radius, a0, a1)]
     return @lines = ary
   end

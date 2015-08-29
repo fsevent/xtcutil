@@ -54,9 +54,6 @@ class CurveLine
       ctx.move_to @cx + @radius * Math.cos(@a0),
                   @cy + @radius * Math.sin(@a0) + h0
       a1 = @a1
-      while a1 < @a0
-        a1 += 2 * Math::PI
-      end
       1.upto(nstep) {|i|
         t = (i.to_f / nstep)
         a = @a0 * (1-t) + a1 * t
