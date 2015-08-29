@@ -100,7 +100,7 @@ class Layout
           end
         end
         if ep[:station_name] && /\S/ =~ ep[:station_name]
-          node.set_node_name(ep[:station_name])
+          node.set_node_name(ep[:station_name].strip.gsub(/\s+/, '_'))
         end
         if ep[:elev_height]
           node.set_node_height(ep[:elev_height])
