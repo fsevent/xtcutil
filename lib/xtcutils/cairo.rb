@@ -67,7 +67,7 @@ class CurveLine
 end
 
 def cairo_draw_layout layout, ctx
-  ctx.set_line_width 1
+  ctx.set_line_width 0.5
   layout.each_part {|part|
     part.each_track {|track|
       track.cairo_draw(ctx)

@@ -284,7 +284,7 @@ class Layout
     i = 0
     node_ary.each {|n|
       if !n.get_node_name
-        n.set_node_name("n#{i += 1}")
+        n.set_node_name("v#{i += 1}")
       end
     }
   end
