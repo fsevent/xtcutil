@@ -5,6 +5,7 @@ class Node
     @lines = []
     @comments = []
   end
+  attr_reader :comments
 
   def unified_node
     if @unified

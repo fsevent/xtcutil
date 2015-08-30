@@ -26,7 +26,7 @@ class AbstractLine
   end
 
   def set_line_name(line_name)
-    raise "line name already set"
+    raise "line name already set" if @line_name
     @line_name = line_name
   end
 

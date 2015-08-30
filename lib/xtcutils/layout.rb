@@ -143,9 +143,15 @@ class Layout
       part.each_path {|path|
         startindex = startindex_for_path(path)
         if 0 < path.length
-          define_node(part, path[0], startindex[0])
+          # Turntable set a node for a line already.
+          # The nodes has no corresponding endpoint in the turntable.
+          if !path[0].get_node(startindex[0])
+            define_node(part, path[0], startindex[0])
+          end
           last = path.length - 1
-          define_node(part, path[last], 1-startindex[last])
+          if !path[last].get_node(1-startindex[last])
+            define_node(part, path[last], 1-startindex[last])
+          end
         end
         1.upto(path.length-1) {|i|
           connect_line(node_ary,
