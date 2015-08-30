@@ -14,6 +14,13 @@ class Node
   end
 
   def pretty_print(q)
+    if @unified
+      q.object_group(self) {
+        q.breakable
+        q.text "unified to #{@unified.object_id}"
+      }
+      return
+    end
     center = mean_pos
     error = max_error
     q.object_group(self) {
@@ -104,8 +111,18 @@ class Node
 
   # line.get_node(posindex) should be self.
   def add_line(posindex, line)
-    return unified_node.add_line(line, posindex) if @unified
+    raise ArgumentError, "posindex should be 0 or 1 : #{posindex.inspect}" if posindex != 0 && posindex != 1
+    raise ArgumentError, "line expected: #{line.inspect} " unless line.kind_of? AbstractLine
+    return unified_node.add_line(posindex, line) if @unified
     @lines << [posindex, line]
+  end
+
+  def lines
+    ary = []
+    each_line {|posindex, line|
+      ary << [posindex, line]
+    }
+    ary
   end
 
   def each_line(&b) # :yields: line, posindex

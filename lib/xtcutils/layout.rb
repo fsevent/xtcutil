@@ -55,7 +55,8 @@ class Layout
   def generate_graph
     return @node_ary if defined? @node_ary
     node_ary = []
-    setup_inter_part_node(node_ary)
+    e_nodes = setup_inter_part_node(node_ary)
+    connect_close_endpoints(e_nodes)
     setup_intra_part_node(node_ary)
     setup_other_node(node_ary)
     node_ary = clean_nodes(node_ary)
@@ -67,6 +68,7 @@ class Layout
 
   def setup_inter_part_node(node_ary)
     hash = {}
+    e_nodes = {}
     each_part {|obj|
       case obj
       when CurvePart
@@ -81,6 +83,7 @@ class Layout
         next if ep[:type] != 'E' && ep[:type] != 'T'
         if ep[:type] == 'E' # unconnected endpoint
           node_ary << (node = Node.new)
+          e_nodes[node] = ep[:pos]
           obj.set_endpoint_node ep, node
           hash[node] = [obj.index]
         else # ep[:type] == 'T' # connected endpoint
@@ -106,6 +109,23 @@ class Layout
         if ep[:elev_height]
           node.set_node_height(ep[:elev_height])
           node.set_attr(:defined_height, true)
+        end
+      }
+    }
+    e_nodes
+  end
+
+  def connect_close_endpoints(e_nodes)
+    threshold = 0.1 # nodes nearer than threshold are unified.
+    e_nodes = e_nodes.to_a.sort_by {|n, pos| pos[0] } # sort by x.
+    e_nodes.each_with_index {|(n0, pos0), i|
+      (i-1).downto(0) {|j|
+        n1, pos1 = e_nodes[j]
+        break if threshold <= pos0[0] - pos1[0]
+        next if threshold <= (pos0[1] - pos1[1]).abs
+        if hypot_pos(pos0, pos1) < threshold
+          n0.unify_node(n1)
+          break
         end
       }
     }
@@ -392,6 +412,7 @@ class Layout
       }
       height = total_height / total_weight
       n.set_node_height(height)
+      #if %w[n102 n107].include? n.get_node_name then pp [n, height, total_height, total_weight, hh.map {|n2, h| [n2, h, dh[n][n2]] }]; end
     }
   end
 

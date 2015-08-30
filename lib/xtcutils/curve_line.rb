@@ -32,4 +32,20 @@ class CurveLine < AbstractLine
     @radius * (@a1 - @a0)
   end
 
+  def vector(posindex)
+    raise "unexpected pos index: #{i}" if i != 0 && i != 1
+    return @vectors[posindex] if defined? @vectors
+    @vectors = [
+      [
+        -Math.sin(@a0),
+        Math.cos(@a0),
+      ],
+      [
+        -Math.sin(@a1),
+        Math.cos(@a1),
+      ],
+    ]
+    return @vectors[posindex]
+  end
+
 end
