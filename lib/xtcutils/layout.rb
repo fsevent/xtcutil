@@ -79,17 +79,23 @@ class Layout
       else
         next
       end
+      ep_num = 0
       obj.each_seg {|ep|
         next if ep[:type] != 'E' && ep[:type] != 'T'
+        ep_num += 1
         if ep[:type] == 'E' # unconnected endpoint
-          node_ary << (node = Node.new)
+          node = Node.new
+          node.add_comment "T#{obj.index}EP#{ep_num}"
+          node_ary << node
           e_nodes[node] = ep[:pos]
           obj.set_endpoint_node ep, node
           hash[node] = [obj.index]
         else # ep[:type] == 'T' # connected endpoint
           ep_index = ep[:index]
           if obj.index < ep_index
-            node_ary << (node = Node.new)
+            node = Node.new
+            node.add_comment "T#{obj.index}EP#{ep_num}"
+            node_ary << node
             obj.set_endpoint_node ep, node
             hash[node] = [obj.index]
           else
@@ -97,6 +103,7 @@ class Layout
             ep0 = obj0.nearest_connected_endpoint(ep[:pos])
             node = obj0.fetch_endpoint_node ep0
             obj.set_endpoint_node ep, node
+            node.add_comment "T#{obj.index}EP#{ep_num}"
             hash[node] << obj.index
             if 2 < hash[node].length
               raise "too many node at #{ep[:pos].inspect}"
@@ -200,7 +207,9 @@ class Layout
     node2 = line2.get_node(posindex2)
     if !node1
       if !node2
-        node_ary << (node = Node.new)
+        node = Node.new
+        node.add_comment "T#{line1.part.index}"
+        node_ary << node
         line1.set_node(posindex1, node)
         line2.set_node(posindex2, node)
       else

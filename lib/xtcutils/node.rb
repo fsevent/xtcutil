@@ -3,6 +3,7 @@ class Node
     @unified = nil
     @attrs = {}
     @lines = []
+    @comments = []
   end
 
   def unified_node
@@ -36,9 +37,6 @@ class Node
           q.text("{error=%.3g}" % error)
         end
       end
-      if get_attr(:defined_height)
-        q.text "(zdef)"
-      end
       if !@lines.empty?
         q.text ":"
         each_line {|posindex, line|
@@ -52,6 +50,14 @@ class Node
           q.text n_name
         }
       end
+      if get_attr(:defined_height)
+        q.breakable
+        q.text "(zdef)"
+      end
+      @comments.each {|comment|
+        q.breakable
+        q.text "(#{comment})"
+      }
     }
   end
 
@@ -76,9 +82,13 @@ class Node
     @lines.each {|posindex, line|
       node.add_line(posindex, line)
     }
+    @comments.each {|comment|
+      node.add_comment(comment)
+    }
     @unified = node
     @attrs = nil
     @lines = nil
+    @comments = nil
   end
 
   def set_attr(k, v)
@@ -164,6 +174,10 @@ class Node
       error = e if error < e
     }
     return error
+  end
+
+  def add_comment(comment)
+    @comments << comment
   end
 
 end
