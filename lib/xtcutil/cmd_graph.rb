@@ -74,6 +74,11 @@ def graph_to_json_data(layout)
           startnodes:startindex_ary,
         }
         json_data << path_hash
+        # reverse path is also possible until we support spring point.
+        path_hash = path_hash.dup
+        path_hash[:edges] = path_hash[:edges].reverse
+        path_hash[:startnodes] = startindex_ary.reverse.map {|i| 1-i }
+        json_data << path_hash
       }
     }
   }
