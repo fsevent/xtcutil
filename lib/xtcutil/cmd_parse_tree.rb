@@ -2,7 +2,7 @@ require 'json'
 
 require 'xtcutil/parser'
 
-def main_json(argv)
+def main_parse_tree(argv)
   argv.each {|arg|
     params = {}
     parsed = []

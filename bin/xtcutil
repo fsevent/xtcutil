@@ -6,10 +6,10 @@ def main_help(argv)
   puts <<'End'
 usage:
   xtcutil help
-  xtcutil json file.xtc
   xtcutil show file.xtc
   xtcutil pdf file.xtc
   xtcutil png file.xtc
+  xtcutil parse-tree file.xtc
 End
 end
 
@@ -21,8 +21,6 @@ def main(argv)
   case subcommand
   when 'help'
     main_help(argv)
-  when 'json'
-    require 'xtcutil/cmd_json'; main_json(argv)
   when 'graph'
     require 'xtcutil/cmd_graph'; main_graph(argv)
   when 'show'
@@ -31,6 +29,8 @@ def main(argv)
     require 'xtcutil/cmd_pdf'; main_pdf(argv)
   when 'png'
     require 'xtcutil/cmd_png'; main_png(argv)
+  when 'parse-tree'
+    require 'xtcutil/cmd_parse_tree'; main_parse_tree(argv)
   else
     $stderr.print "unexpected subcommand: #{subcommand}"
     exit false
