@@ -5,11 +5,11 @@ require 'pp'
 def main_help(argv)
   puts <<'End'
 usage:
-  xtcutils help
-  xtcutils json file.xtc
-  xtcutils show file.xtc
-  xtcutils pdf file.xtc
-  xtcutils png file.xtc
+  xtcutil help
+  xtcutil json file.xtc
+  xtcutil show file.xtc
+  xtcutil pdf file.xtc
+  xtcutil png file.xtc
 End
 end
 
@@ -22,15 +22,15 @@ def main(argv)
   when 'help'
     main_help(argv)
   when 'json'
-    require 'xtcutils/cmd_json'; main_json(argv)
+    require 'xtcutil/cmd_json'; main_json(argv)
   when 'graph'
-    require 'xtcutils/cmd_graph'; main_graph(argv)
+    require 'xtcutil/cmd_graph'; main_graph(argv)
   when 'show'
-    require 'xtcutils/cmd_show'; main_show(argv)
+    require 'xtcutil/cmd_show'; main_show(argv)
   when 'pdf'
-    require 'xtcutils/cmd_pdf'; main_pdf(argv)
+    require 'xtcutil/cmd_pdf'; main_pdf(argv)
   when 'png'
-    require 'xtcutils/cmd_png'; main_png(argv)
+    require 'xtcutil/cmd_png'; main_png(argv)
   else
     $stderr.print "unexpected subcommand: #{subcommand}"
     exit false

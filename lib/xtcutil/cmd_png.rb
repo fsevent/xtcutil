@@ -1,7 +1,7 @@
 require 'cairo'
 
-require 'xtcutils'
-require 'xtcutils/cairo'
+require 'xtcutil'
+require 'xtcutil/cairo'
 
 class PNGCommand
   def initialize(layout)

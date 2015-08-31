@@ -1,6 +1,6 @@
 require 'json'
 
-require 'xtcutils/parser'
+require 'xtcutil/parser'
 
 def main_json(argv)
   argv.each {|arg|

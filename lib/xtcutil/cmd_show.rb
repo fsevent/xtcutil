@@ -1,8 +1,8 @@
 require 'gtk3'
 require 'optparse'
 
-require 'xtcutils'
-require 'xtcutils/cairo'
+require 'xtcutil'
+require 'xtcutil/cairo'
 
 class XTCWindow < Gtk::Window
   def initialize(layout)
@@ -10,7 +10,7 @@ class XTCWindow < Gtk::Window
 
     super()
 
-    set_title "xtcutils"
+    set_title "xtcutil"
     signal_connect "destroy" do
       Gtk.main_quit
     end
@@ -39,7 +39,7 @@ class XTCWindow < Gtk::Window
     @scale = [scale_x, scale_y].min
     @window_w = (w * @scale).to_i
     @window_h = (h * @scale).to_i
-    if $xtcutils_show_3d
+    if $xtcutil_show_3d
       max_z = 0.0
       @layout.generate_graph.each {|node|
         z = node.get_node_height
@@ -47,7 +47,7 @@ class XTCWindow < Gtk::Window
           max_z = z
         end
       }
-      @window_h += max_z * $xtcutils_show_3d
+      @window_h += max_z * $xtcutil_show_3d
       @max_z = max_z
     else
       @max_z = 0.0
@@ -63,8 +63,8 @@ class XTCWindow < Gtk::Window
     ctx.save {
       ctx.translate 0, @window_h
       ctx.scale @scale, -@scale
-      if $xtcutils_show_3d
-        cairo_draw3d_layout @layout, ctx, $xtcutils_show_3d
+      if $xtcutil_show_3d
+        cairo_draw3d_layout @layout, ctx, $xtcutil_show_3d
       else
         cairo_draw_layout @layout, ctx
       end
@@ -72,16 +72,16 @@ class XTCWindow < Gtk::Window
   end
 end
 
-$xtcutils_show_3d = nil
+$xtcutil_show_3d = nil
 
 def op_show
   op = OptionParser.new
-  op.banner = 'Usage: xtcutils show [options] xtcfile'
+  op.banner = 'Usage: xtcutil show [options] xtcfile'
   op.def_option('--3d=[ZSCALE]', 'view 3D') {|zscale|
     if zscale
-      $xtcutils_show_3d = zscale.to_f
+      $xtcutil_show_3d = zscale.to_f
     else
-      $xtcutils_show_3d = 1.0
+      $xtcutil_show_3d = 1.0
     end
   }
   op
@@ -95,7 +95,7 @@ def main_show(argv)
     parse_io params, parsed, f
   }
   layout = Layout.new(parsed)
-  if $xtcutils_show_3d
+  if $xtcutil_show_3d
     layout.generate_graph
   end
   Gtk.init

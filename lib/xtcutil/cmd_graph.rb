@@ -1,6 +1,6 @@
 require 'json'
 
-require 'xtcutils'
+require 'xtcutil'
 
 def main_graph(argv)
   argv.each {|arg|

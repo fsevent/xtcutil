@@ -1,7 +1,7 @@
 require 'cairo'
 
-require 'xtcutils'
-require 'xtcutils/cairo'
+require 'xtcutil'
+require 'xtcutil/cairo'
 
 class PDFCommand
   def initialize(layout)
