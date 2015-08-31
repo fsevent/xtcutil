@@ -54,13 +54,15 @@ def graph_to_json_data(layout)
     }
   }
   layout.each_part {|part|
+    numstates = 0
+    part.each_state_paths {|state, paths| numstates += 1 }
+    part_hash = {
+      type:"part",
+      part:"T#{part.index}",
+      numstates:numstates,
+    }
+    json_data << part_hash
     part.each_state_paths {|state, paths|
-      part_hash = {
-        type:"part",
-        part:"T#{part.index}",
-        numstates:paths.length,
-      }
-      json_data << part_hash
       paths.each {|path|
         startindex_ary = layout.startindex_for_path(path)
         state ||= ''
