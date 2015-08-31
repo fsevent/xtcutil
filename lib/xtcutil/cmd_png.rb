@@ -1,4 +1,5 @@
 require 'cairo'
+require 'optparse'
 
 require 'xtcutil'
 require 'xtcutil/cairo'
@@ -32,13 +33,32 @@ class PNGCommand
     ctx.save {
       ctx.translate 0, @image_h
       ctx.scale @scale, -@scale
-      cairo_draw_layout @layout, ctx
+      if $xtcutil_png_3d
+        cairo_draw3d_layout @layout, ctx, $xtcutil_png_3d
+      else
+        cairo_draw_layout @layout, ctx
+      end
     }
   end
 end
 
+$xtcutil_png_3d = nil
+
+def op_png
+  op = OptionParser.new
+  op.banner = 'Usage: xtcutil png [options] xtcfile'
+  op.def_option('--3d=[ZSCALE]', 'view 3D') {|zscale|
+    if zscale
+      $xtcutil_png_3d = zscale.to_f
+    else
+      $xtcutil_png_3d = 1.0
+    end
+  }
+  op
+end
 
 def main_png(argv)
+  op_png.parse!(argv)
   filename = argv[0]
   params = {}
   parsed = []
@@ -46,6 +66,9 @@ def main_png(argv)
     parse_io params, parsed, f
   }
   layout = Layout.new(parsed)
+  if $xtcutil_png_3d
+    layout.generate_graph
+  end
   output_filename = filename.sub(/\.xtc\z/, '') + '.png'
   PNGCommand.new(layout).generate_png(output_filename)
 end
