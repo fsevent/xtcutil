@@ -62,6 +62,7 @@ class Layout
     node_ary = clean_nodes(node_ary)
     node_ary = reorder_nodes(node_ary)
     setup_node_name(node_ary)
+    setup_line_name(node_ary)
     setup_elevation(node_ary)
     @node_ary = node_ary
   end
@@ -286,6 +287,17 @@ class Layout
       if !n.get_node_name
         n.set_node_name("v#{i += 1}")
       end
+    }
+  end
+
+  def setup_line_name(node_ary)
+    i = 0
+    node_ary.each {|n|
+      n.each_line {|posindex, line|
+        if !line.get_line_name
+          line.set_line_name("e#{i += 1}")
+        end
+      }
     }
   end
 

@@ -24,7 +24,7 @@ class Node
       return
     end
     center = mean_pos
-    error = max_error
+    mgap = max_gap
     q.object_group(self) {
       q.breakable
       q.text(get_node_name || "(#{self.object_id})")
@@ -34,8 +34,8 @@ class Node
         else
           q.text("(%.3f,%.3f)" % [center[0], center[1]])
         end
-        if 0.1 < error
-          q.text("{error=%.3g}" % error)
+        if 0.1 < mgap
+          q.text("{max_gap=%.3g}" % error)
         end
       end
       if !@lines.empty?
@@ -149,23 +149,22 @@ class Node
   end
 
   def mean_pos
+    return unified_node.mean_pos if @unified
+    n = @lines.length
+    if n == 0
+      return nil
+    end
     x = 0.0
     y = 0.0
-    n = 0
     each_line {|posindex, line|
-      n += 1
       pos = line.get_pos(posindex)
       x += pos[0]
       y += pos[1]
     }
-    if n == 0
-      nil
-    else
-      [x / n, y / n]
-    end
+    [x / n, y / n]
   end
 
-  def max_error
+  def max_gap
     center = mean_pos
     return nil if !center
     error = 0.0
