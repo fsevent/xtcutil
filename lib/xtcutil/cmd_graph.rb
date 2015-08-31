@@ -15,7 +15,7 @@ def graph_to_json_data(layout)
       name:n.get_node_name,
       degree:n.num_lines,
       pos:pos,
-      #max_gap:n.max_error,
+      #max_gap:n.max_gap,
       comments:n.comments,
     }
     json_data << node_hash
