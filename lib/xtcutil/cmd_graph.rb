@@ -69,6 +69,7 @@ def graph_to_json_data(layout)
           part:"T#{part.index}",
           state:state,
           edges:path.map {|line| line.get_line_name},
+          startnodes:startindex_ary,
         }
         json_data << path_hash
       }
