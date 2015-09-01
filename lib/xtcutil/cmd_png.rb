@@ -13,8 +13,12 @@ class PNGCommand
   def calc_scale
     w, h = @layout.roomsize
     return 100, 100 if !w
-    max_w = 8.0 * 72  # points
-    max_h = 11.0 * 72 # points
+    if !$xtcutil_png_size
+      max_w = 8.0 * 72  # points
+      max_h = 11.0 * 72 # points
+    else
+      max_w, max_h = $xtcutil_png_size
+    end
     scale_x = max_w / w
     scale_y = max_h / h
     @scale = [scale_x, scale_y].min
@@ -43,6 +47,7 @@ class PNGCommand
 end
 
 $xtcutil_png_3d = nil
+$xtcutil_png_size = nil
 
 def op_png
   op = OptionParser.new
@@ -53,6 +58,13 @@ def op_png
     else
       $xtcutil_png_3d = 1.0
     end
+  }
+  op.def_option('--size=WxH', 'specify image size') {|arg|
+    if /\A(\d+)x(\d+)\z/ !~ arg
+      STDERR.puts "invalid size option: #{arg}"
+      exit false
+    end
+    $xtcutil_png_size = [$1.to_i, $2.to_i]
   }
   op
 end
