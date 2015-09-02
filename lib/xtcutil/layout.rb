@@ -84,27 +84,23 @@ class Layout
       obj.each_seg {|ep|
         next if ep[:type] != 'E' && ep[:type] != 'T'
         ep_num += 1
+        node = Node.new
+        node.add_comment "T#{obj.index}EP#{ep_num}#{ep[:type]}"
+        node.add_list_attr :ep_pos, ep[:pos]
+        obj.set_endpoint_node ep, node
+        node_ary << node
+        hash[node] = [obj.index]
         if ep[:type] == 'E' # unconnected endpoint
-          node = Node.new
-          node.add_comment "T#{obj.index}EP#{ep_num}"
-          node_ary << node
           e_nodes[node] = ep[:pos]
-          obj.set_endpoint_node ep, node
-          hash[node] = [obj.index]
         else # ep[:type] == 'T' # connected endpoint
           ep_index = ep[:index]
           if obj.index < ep_index
-            node = Node.new
-            node.add_comment "T#{obj.index}EP#{ep_num}"
-            node_ary << node
-            obj.set_endpoint_node ep, node
             hash[node] = [obj.index]
           else
             obj0 = parts_ary[ep_index]
             ep0 = obj0.nearest_connected_endpoint(ep[:pos])
-            node = obj0.fetch_endpoint_node ep0
-            obj.set_endpoint_node ep, node
-            node.add_comment "T#{obj.index}EP#{ep_num}"
+            node0 = obj0.fetch_endpoint_node ep0
+            node0.unify_node(node)
             hash[node] << obj.index
             if 2 < hash[node].length
               raise "too many node at #{ep[:pos].inspect}"
