@@ -5,7 +5,7 @@ This file explains the details of the JSON format.
 
 ## Overall structure
 
-A xtrkcad file contains a railroad layout.
+A xtrkcad file contains a model railroad layout.
 A railroad layout consists of parts.
 A part consists of edges.
 A part has one or more states.
