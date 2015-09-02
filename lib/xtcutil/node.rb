@@ -36,7 +36,7 @@ class Node
           q.text("{max_gap=%.3g}" % error)
         end
       end
-      lines = get_list_attrs(:lines)
+      lines = get_list_attr(:lines)
       if !lines.empty?
         q.text ":"
         each_line {|posindex, line|
@@ -54,7 +54,7 @@ class Node
         q.breakable
         q.text "(zdef)"
       end
-      get_list_attrs(:comments).each {|comment|
+      get_list_attr(:comments).each {|comment|
         q.breakable
         q.text "(#{comment})"
       }
@@ -70,7 +70,7 @@ class Node
       return
     end
     @uniq_attrs.each {|k, v1|
-      if node.uniq_attrs.has_key?(k) && v1 != (v2 = node.uniq_attrs[k])
+      if node.has_uniq_attr?(k) && v1 != (v2 = node.uniq_attrs[k])
         raise ArgumentError, "unique attribute has different value: #{k} : #{v1.inspect} and #{v2.inspect}"
       end
     }
@@ -79,8 +79,10 @@ class Node
         node.set_uniq_attr(k, v1)
       end
     }
-    @list_attrs.each {|k, v|
-      node.add_list_attr(k, v)
+    @list_attrs.each {|k, vs|
+      vs.each {|v|
+        node.add_list_attr(k, v)
+      }
     }
     @unified = node
     @uniq_attrs = nil
