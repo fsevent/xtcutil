@@ -3,7 +3,7 @@ require 'cairo'
 def cairo_draw_height(ctx, x, y, h, node)
   ctx.save {
     ctx.set_line_width 0.1
-    if node.get_attr(:defined_height)
+    if node.get_uniq_attr(:defined_height)
       ctx.set_source_color("cyan")
     else
       ctx.set_source_color("black")

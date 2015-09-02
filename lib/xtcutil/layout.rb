@@ -116,7 +116,7 @@ class Layout
         end
         if ep[:elev_height]
           node.set_node_height(ep[:elev_height])
-          node.set_attr(:defined_height, true)
+          node.set_uniq_attr(:defined_height, true)
         end
       }
     }
