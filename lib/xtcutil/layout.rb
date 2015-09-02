@@ -87,6 +87,7 @@ class Layout
         node = Node.new
         node.add_comment "T#{obj.index}EP#{ep_num}#{ep[:type]}"
         node.add_list_attr :ep_pos, ep[:pos]
+        node.add_list_attr :ep_angle, ep[:angle]
         obj.set_endpoint_node ep, node
         if ep[:station_name] && /\S/ =~ ep[:station_name]
           node.set_node_name(ep[:station_name].strip.gsub(/\s+/, '_'))
@@ -111,6 +112,15 @@ class Layout
         if 2 < node.count_list_attr(:ep_pos)
           ep_pos_list = node.get_list_attr(:ep_pos)
           raise "too many node at #{ep_pos_list[0].inspect}"
+        end
+        angle1, angle2 = node.get_list_attr(:ep_angle)
+        tolerance = 45.0
+        a1, a2 = angle1, angle2
+        a1 += 180 # opposite direction
+        a1 -= 360 if 360 <= a1
+        d = (a1 - a2).abs
+        if tolerance < d && tolerance < (d - 360).abs
+          raise "inter part node angle too bend: #{angle1} #{angle2}"
         end
       }
       node_ary.replace node_ary.reject {|n| !n.equal?(n.unified_node) }
