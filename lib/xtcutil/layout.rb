@@ -195,17 +195,17 @@ class Layout
     end
   end
 
-  def define_node(part, line, posindex)
-    pos = line.get_pos(posindex)
+  def define_node(part, line, tipindex)
+    pos = line.get_pos(tipindex)
     ep = part.nearest_endpoint(pos)
     ep_node = part.fetch_endpoint_node(ep)
-    line_node = line.get_node(posindex)
+    line_node = line.get_node(tipindex)
     line_node.unify_node(ep_node)
   end
 
-  def connect_line(line1, posindex1, line2, posindex2)
-    node1 = line1.get_node(posindex1)
-    node2 = line2.get_node(posindex2)
+  def connect_line(line1, tipindex1, line2, tipindex2)
+    node1 = line1.get_node(tipindex1)
+    node2 = line2.get_node(tipindex2)
     node1.unify_node(node2)
   end
 
@@ -235,8 +235,8 @@ class Layout
           until q.empty?
             n1 = q.pop
             h[n1] = h.size
-            n1.each_line {|posindex, line|
-              n2 = line.get_node(1-posindex)
+            n1.each_line {|tipindex, line|
+              n2 = line.get_node(1-tipindex)
               next if h.has_key? n2
               q.push n2
             }
@@ -259,7 +259,7 @@ class Layout
   def setup_line_name(node_ary)
     i = 0
     node_ary.each {|n|
-      n.each_line {|posindex, line|
+      n.each_line {|tipindex, line|
         if !line.get_line_name
           line.set_line_name("e#{i += 1}")
         end
@@ -285,31 +285,31 @@ class Layout
     }
   end
 
-  PathElem = Struct.new("PathElem", :posindex1, :line, :posindex2, :node)
+  PathElem = Struct.new("PathElem", :tipindex1, :line, :tipindex2, :node)
 
   def each_elevation_computation_area(n0)
-    n0.each_line {|posindex_a1, line_a|
+    n0.each_line {|tipindex_a1, line_a|
       paths_hash = {}
-      posindex_a2 = 1-posindex_a1
-      n1 = line_a.get_node(posindex_a2)
+      tipindex_a2 = 1-tipindex_a1
+      n1 = line_a.get_node(tipindex_a2)
       next if n1.get_node_height
       visited = { n0 => true, n1 => true }
       q = []
       if n1.num_lines == 2
-        q.push [n0, [PathElem[posindex_a1, line_a, posindex_a2, n1]], n1]
+        q.push [n0, [PathElem[tipindex_a1, line_a, tipindex_a2, n1]], n1]
       else
         paths_hash[n0] ||= {}
         paths_hash[n0][n1] ||= []
-        paths_hash[n0][n1] << [PathElem[posindex_a1, line_a, posindex_a2, n1]]
+        paths_hash[n0][n1] << [PathElem[tipindex_a1, line_a, tipindex_a2, n1]]
         q.push [n1, [], n1]
       end
       until q.empty?
         n1, path, n2 = q.pop
-        n2.each_line {|posindex_b1, line_b|
-          posindex_b2 = 1-posindex_b1
-          n3 = line_b.get_node(posindex_b2)
+        n2.each_line {|tipindex_b1, line_b|
+          tipindex_b2 = 1-tipindex_b1
+          n3 = line_b.get_node(tipindex_b2)
           next if !path.empty? && path.last.line == line_b
-          path3 = path + [PathElem[posindex_b1, line_b, posindex_b2, n3]]
+          path3 = path + [PathElem[tipindex_b1, line_b, tipindex_b2, n3]]
           if n3.get_node_height || n3.num_lines != 2
             paths_hash[n1] ||= {}
             paths_hash[n1][n3] ||= []

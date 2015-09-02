@@ -22,7 +22,7 @@ def graph_to_json_data(layout)
       node_hash[:comments] = n.get_list_attr(:comments)
     end
     json_data << node_hash
-    n.each_line {|posindex, line|
+    n.each_line {|tipindex, line|
       next if line_visited.has_key?(line)
       line_visited[line] = true
       edge_hash = {

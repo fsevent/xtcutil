@@ -22,7 +22,7 @@ class StraightLine < AbstractLine
     hypot_pos(pos0, pos1)
   end
 
-  def vector(posindex)
+  def vector(tipindex)
     raise "unexpected pos index: #{i}" if i != 0 && i != 1
     return @vector if defined? @vector
     d = distance

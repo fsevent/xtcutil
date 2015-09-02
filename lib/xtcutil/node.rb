@@ -39,8 +39,8 @@ class Node
       lines = get_list_attr(:lines)
       if !lines.empty?
         q.text ":"
-        each_line {|posindex, line|
-          n = line.get_node(1-posindex)
+        each_line {|tipindex, line|
+          n = line.get_node(1-tipindex)
           if n
             n_name = n.get_node_name || "(#{n.object_id})"
           else
@@ -148,26 +148,26 @@ class Node
   def get_node_height() get_uniq_attr(:node_height) end
   def fetch_node_height() fetch_uniq_attr(:node_height) end
 
-  # line.get_node(posindex) should be self.
-  def add_line(posindex, line)
-    raise ArgumentError, "posindex should be 0 or 1 : #{posindex.inspect}" if posindex != 0 && posindex != 1
+  # line.get_node(tipindex) should be self.
+  def add_line(tipindex, line)
+    raise ArgumentError, "tipindex should be 0 or 1 : #{tipindex.inspect}" if tipindex != 0 && tipindex != 1
     raise ArgumentError, "line expected: #{line.inspect} " unless line.kind_of? AbstractLine
-    return unified_node.add_line(posindex, line) if @unified
-    add_list_attr(:lines, [posindex, line])
+    return unified_node.add_line(tipindex, line) if @unified
+    add_list_attr(:lines, [tipindex, line])
   end
 
   def lines
     ary = []
-    each_line {|posindex, line|
-      ary << [posindex, line]
+    each_line {|tipindex, line|
+      ary << [tipindex, line]
     }
     ary
   end
 
-  def each_line(&b) # :yields: line, posindex
+  def each_line(&b) # :yields: line, tipindex
     return unified_node.each_line(&b) if @unified
-    get_list_attr(:lines).each {|posindex, line|
-      yield posindex, line
+    get_list_attr(:lines).each {|tipindex, line|
+      yield tipindex, line
     }
   end
 
@@ -188,8 +188,8 @@ class Node
     end
     x = 0.0
     y = 0.0
-    each_line {|posindex, line|
-      pos = line.get_pos(posindex)
+    each_line {|tipindex, line|
+      pos = line.get_pos(tipindex)
       x += pos[0]
       y += pos[1]
     }
@@ -200,8 +200,8 @@ class Node
     center = mean_pos
     return nil if !center
     gap = 0.0
-    each_line {|posindex, line|
-      pos = line.get_pos(posindex)
+    each_line {|tipindex, line|
+      pos = line.get_pos(tipindex)
       e = hypot_pos(pos, center)
       gap = e if gap < e
     }
