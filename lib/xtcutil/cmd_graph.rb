@@ -15,11 +15,53 @@ def graph_to_json_data(layout)
       name:n.get_node_name,
       degree:n.num_lines,
       pos:pos,
-      #max_gap:n.max_gap,
-      comments:n.get_list_attr(:comments)
+      max_gap:n.max_gap, # max_gap should be small.
     }
     if 0 < n.count_list_attr(:comments)
       node_hash[:comments] = n.get_list_attr(:comments)
+    end
+    lines = []
+    n.each_line_with_angle {|dir_angle, tipindex, line|
+      lines << [dir_angle, tipindex, line]
+    }
+    if lines.empty?
+      node_hash[:edges0] = []
+      node_hash[:edges1] = []
+    elsif lines.length == 1
+      node_hash[:edges0] = [lines[0][2].get_line_name]
+      node_hash[:edges1] = []
+    elsif lines.length == 2
+      node_hash[:edges0] = [lines[0][2].get_line_name]
+      node_hash[:edges1] = [lines[1][2].get_line_name]
+    else # lines.length > 2
+      lines = lines.sort_by {|dir_angle, tipindex, line| dir_angle }
+      indexes = (0...lines.length).map {|i| [i] }
+      while 2 < indexes.length
+        min_j = (0...indexes.length).min_by {|j|
+          is = indexes[j]
+          i0 = is[-1]
+          i1 = (i0 + 1) % lines.length
+          angle_extent = lines[i1][0] - lines[i0][0]
+          angle_extent += 2 * Math::PI if angle_extent < 0
+          angle_extent
+        }
+        if min_j + 1 < indexes.length
+          indexes[min_j].concat indexes.delete_at(min_j+1)
+        else
+          is1 = indexes.shift
+          indexes.last << is1
+        end
+      end
+      is0, is1 = indexes
+      node_hash[:edges0] = is0.map {|i| [lines[i][1], lines[i][2].get_line_name] }
+      node_hash[:edges1] = is1.map {|i| [lines[i][1], lines[i][2].get_line_name] }
+      angle_extent0 = lines[is0[-1]][0] - lines[is0[0]][0]
+      angle_extent0 += 2 * Math::PI if angle_extent0 < 0
+      angle_extent1 = lines[is1[-1]][0] - lines[is1[0]][0]
+      angle_extent1 += 2 * Math::PI if angle_extent1 < 0
+      # angle_extent should be small.
+      node_hash[:angle_extent0] = angle_extent0
+      node_hash[:angle_extent1] = angle_extent1
     end
     json_data << node_hash
     n.each_line {|tipindex, line|
