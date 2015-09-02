@@ -5,6 +5,16 @@ This file explains the details of the JSON format.
 
 ## Overall structure
 
+A xtrkcad file contains a railroad layout.
+A railroad layout consists of parts.
+A part consists of edges.
+A part has one or more states.
+A part defines paths which is a sequence of edges.
+A path belong to a state.
+The path is usable only if the state of the part is the state.
+A edge connect between two nodes.
+A node is shared by several edges.
+
 `xtcutil graph foo.xtc' generates an array of objects.
 The object has "type" member and it distinguish the type of the object.
 The value of "type" member is one of follows.
@@ -16,7 +26,12 @@ The value of "type" member is one of follows.
 - "part"
 - "path"
 
-angles are represented in radian.
+The position is represented in rectangular coordinate system.
+In a 2D image, the positive X axis heads left and
+the positive Y axis heads upper.
+Z axis is also used.
+
+Angles in X-Y plane are represented in radian.
 0 means positive X axis.
 pi/2 means positive Y axis.
 
@@ -30,15 +45,15 @@ A node object has following members.
 - pos: [X, Y, Z]        # the position of this node as 3-element array
 - edges0: [[0 or 1, ENAME]      # the first set of edges connected to this node
 - edges1: [[0 or 1, ENAME]      # the second set of edge connected to this node
-- max_gap: NUMBER       # ideally this should be zero.  maximum distance to the connected edges.
-- angle_extent0: NUMBER # ideally this should be zero. the angle which occupy edges0 (optional)
-- angle_extent1: NUMBER # ideally this should be zero. the angle which occupy edges1 (optional)
-- comments: [STRING, ...]       # comments for debug
+- max_gap: NUMBER       # ideally this should be zero.  maximum distance to the connected edges. (debug)
+- angle_extent0: NUMBER # ideally this should be zero. the angle which occupy edges0 (debug)
+- angle_extent1: NUMBER # ideally this should be zero. the angle which occupy edges1 (debug)
+- comments: [STRING, ...]       # comments (debug)
 
-"Change Elevations" command of xtrkcad can specify heigits of nodes.
-They are used as Z value of pos member.
-The heights of other nodes, which height is not specified, are interpolated.
-However the alogrighm of the interpolation is different from xtrkcad, the result can be different.
+"Change Elevations" command of xtrkcad can specify the height of a node.
+It is used as Z value of pos member.
+The heights are interpolated to nodes which height is not specified.
+However the interpolation alogrighm is different from xtrkcad, the result can be different.
 
 The name of the node, NNAME, is also specifiable from xtrkcad using "Change Elevations".
 Choose "Station" to specify the name of the node.
@@ -50,8 +65,8 @@ ENAME, edge name, specifies the edge.
 If 0 is specified, node0 of the edge is this node.
 If 1 is specified, node1 of the edge is this node.
 
-When a train pass a node, the train passes from one of edges0 to one of edges1
-or from one of edges1 to one of edges0.
+When a train pass a node between two paths,
+the train passes from one of edges0 to one of edges1 or from one of edges1 to one of edges0.
 
 ## edge object
 
@@ -60,7 +75,7 @@ A edge object has following members.
 
 - type: "edge"
 - name: ENAME           # the name of the edge
-- part: "T{num}"        # the name of the part which contains this edge
+- part: "T{INDEX}"      # the name of the part which contains this edge
 - angle0: NUMBER        # the angle of direction at node0
 - pos0: [X, Y, Z]       # the position of node0 as 3-element array
 - node0: NNAME          # the name of node0
@@ -99,11 +114,11 @@ A part represents a part which contains several edges.
 A part object has following members.
 
 - type: "part"
-- part: "T{num}"        # the name of the part
+- part: "T{INDEX}"      # the name of the part
 - numstates: INTEGER    # the number of states of this part
 
-numstates is 1 for usual tracks and 2 for usual swiches.
-turntable has much more states.
+numstates is 1 for usual tracks and 2 for usual switches.
+A turntable may have more states.
 Actual state names can be obtained from corresponding path objects.
 
 ## path object
@@ -112,7 +127,7 @@ A path represents a path in a part.
 A path object has following members.
 
 - type: "part"
-- part: "T{num}"        # the name of the part
+- part: "T{INDEX}"      # the name of the part
 - state: STRING         # the name of the state
 - edges: [[0 or 1, ENAME], ...] # the edges of the path.
 
