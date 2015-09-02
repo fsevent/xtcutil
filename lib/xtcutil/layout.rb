@@ -85,7 +85,7 @@ class Layout
         node = Node.new
         node.add_comment "T#{obj.index}EP#{ep_num}#{ep[:type]}"
         node.add_list_attr :ep_pos, ep[:pos]
-        node.add_list_attr :ep_angle, ep[:angle] * DEG_TO_RAD
+        node.add_list_attr :ep_angle, ((90 - ep[:angle]) % 360) * DEG_TO_RAD
         obj.set_endpoint_node ep, node
         if ep[:station_name] && /\S/ =~ ep[:station_name]
           node.set_node_name(ep[:station_name].strip.gsub(/\s+/, '_'))

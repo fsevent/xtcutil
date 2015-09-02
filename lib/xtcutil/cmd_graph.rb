@@ -30,8 +30,10 @@ def graph_to_json_data(layout)
         name:line.get_line_name,
         node0:line.get_node(0).get_node_name,
         node1:line.get_node(1).get_node_name,
+        angle0:line.dir_angle0,
         pos0:line.pos0,
         pos1:line.pos1,
+        angle1:line.dir_angle1,
         distance:line.distance,
       }
       case line

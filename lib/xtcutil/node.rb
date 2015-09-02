@@ -36,8 +36,7 @@ class Node
           q.text("{max_gap=%.3g}" % error)
         end
       end
-      lines = get_list_attr(:lines)
-      if !lines.empty?
+      if count_list_attr(:lines) != 0
         q.text ":"
         each_line {|tipindex, line|
           n = line.get_node(1-tipindex)
@@ -149,11 +148,11 @@ class Node
   def fetch_node_height() fetch_uniq_attr(:node_height) end
 
   # line.get_node(tipindex) should be self.
-  def add_line(tipindex, line)
+  def add_line(dir_angle, tipindex, line)
     raise ArgumentError, "tipindex should be 0 or 1 : #{tipindex.inspect}" if tipindex != 0 && tipindex != 1
     raise ArgumentError, "line expected: #{line.inspect} " unless line.kind_of? AbstractLine
-    return unified_node.add_line(tipindex, line) if @unified
-    add_list_attr(:lines, [tipindex, line])
+    return unified_node.add_line(dir_angle, tipindex, line) if @unified
+    add_list_attr(:lines, [dir_angle, tipindex, line])
   end
 
   def lines
@@ -164,10 +163,17 @@ class Node
     ary
   end
 
-  def each_line(&b) # :yields: line, tipindex
+  def each_line(&b) # :yields: tipindex, line
     return unified_node.each_line(&b) if @unified
-    get_list_attr(:lines).each {|tipindex, line|
+    get_list_attr(:lines).each {|dir_angle, tipindex, line|
       yield tipindex, line
+    }
+  end
+
+  def each_line_with_angle(&b) # :yields: angle, tipindex, line
+    return unified_node.each_line(&b) if @unified
+    get_list_attr(:lines).each {|dir_angle, tipindex, line|
+      yield dir_angle, tipindex, line
     }
   end
 

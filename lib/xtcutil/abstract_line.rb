@@ -1,16 +1,20 @@
 class AbstractLine
-  def initialize(part)
+  def initialize(part, pos0, pos1, dir_angle0, dir_angle1)
     @part = part
+    @pos0 = pos0
+    @pos1 = pos1
+    @dir_angle0 = dir_angle0
+    @dir_angle1 = dir_angle1
     @line_name = nil
     n0 = Node.new
     n1 = Node.new
     n0.add_comment("T#{part.index}")
     n1.add_comment("T#{part.index}")
-    n0.add_line(0, self)
-    n1.add_line(1, self)
+    n0.add_line(dir_angle0, 0, self)
+    n1.add_line(dir_angle1, 1, self)
     @nodes = [n0, n1]
   end
-  attr_reader :part
+  attr_reader :part, :pos0, :pos1, :dir_angle0, :dir_angle1
 
   def pretty_print_instance_variables
     instance_variables.sort - [:@part]
@@ -25,9 +29,9 @@ class AbstractLine
   def get_pos(i)
     raise "unexpected pos index: #{i}" if i != 0 && i != 1
     if i == 0
-      pos0
+      @pos0
     else
-      pos1
+      @pos1
     end
   end
 
