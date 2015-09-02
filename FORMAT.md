@@ -103,6 +103,7 @@ A part object has following members.
 - numstates: INTEGER    # the number of states of this part
 
 numstates is 1 for usual tracks and 2 for usual swiches.
+turntable has much more states.
 Actual state names can be obtained from corresponding path objects.
 
 ## path object

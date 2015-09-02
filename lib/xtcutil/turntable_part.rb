@@ -15,7 +15,6 @@ class TurntablePart < AbstractPart
         x1 = cx - radius * s
         y1 = cy - radius * c
         line = StraightLine.new(self, x0, y0, x1, y1)
-        line.set_line_name("T#{self.index}A#{"%.3f" % seg[:angle]}")
         node_other_end = line.get_node(1)
         node_other_end.add_comment("T#{self.index}TP_A#{"%.3f" % seg[:angle]}")
         ary << line
