@@ -16,8 +16,11 @@ def graph_to_json_data(layout)
       degree:n.num_lines,
       pos:pos,
       #max_gap:n.max_gap,
-      comments:n.comments,
+      comments:n.get_list_attr(:comments)
     }
+    if 0 < n.count_list_attr(:comments)
+      node_hash[:comments] = n.get_list_attr(:comments)
+    end
     json_data << node_hash
     n.each_line {|posindex, line|
       next if line_visited.has_key?(line)

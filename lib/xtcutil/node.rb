@@ -2,10 +2,8 @@ class Node
   def initialize
     @unified = nil
     @uniq_attrs = {}
-    @lines = []
-    @comments = []
+    @list_attrs = {}
   end
-  attr_reader :comments
 
   def unified_node
     if @unified
@@ -38,7 +36,8 @@ class Node
           q.text("{max_gap=%.3g}" % error)
         end
       end
-      if !@lines.empty?
+      lines = get_list_attrs(:lines)
+      if !lines.empty?
         q.text ":"
         each_line {|posindex, line|
           n = line.get_node(1-posindex)
@@ -55,7 +54,7 @@ class Node
         q.breakable
         q.text "(zdef)"
       end
-      @comments.each {|comment|
+      get_list_attrs(:comments).each {|comment|
         q.breakable
         q.text "(#{comment})"
       }
@@ -80,16 +79,12 @@ class Node
         node.set_uniq_attr(k, v1)
       end
     }
-    @lines.each {|posindex, line|
-      node.add_line(posindex, line)
-    }
-    @comments.each {|comment|
-      node.add_comment(comment)
+    @list_attrs.each {|k, v|
+      node.add_list_attr(k, v)
     }
     @unified = node
     @uniq_attrs = nil
-    @lines = nil
-    @comments = nil
+    @list_attrs = nil
   end
 
   def has_uniq_attr?(k)
@@ -117,6 +112,31 @@ class Node
     @uniq_attrs[k]
   end
 
+  def count_list_attr(k)
+    return unified_node.count_list_attr(k) if @unified
+    if @list_attrs[k]
+      @list_attrs[k].length
+    else
+      0
+    end
+  end
+
+  def add_list_attr(k, v)
+    return unified_node.add_list_attr(k, v) if @unified
+    @list_attrs[k] ||= []
+    @list_attrs[k] << v
+    nil
+  end
+
+  def get_list_attr(k)
+    return unified_node.get_list_attr(k) if @unified
+    if @list_attrs[k]
+      @list_attrs[k].dup
+    else
+      []
+    end
+  end
+
   def set_node_name(name) set_uniq_attr(:node_name, name) end
   def get_node_name() get_uniq_attr(:node_name) end
   def fetch_node_name() fetch_uniq_attr(:node_name) end
@@ -130,7 +150,7 @@ class Node
     raise ArgumentError, "posindex should be 0 or 1 : #{posindex.inspect}" if posindex != 0 && posindex != 1
     raise ArgumentError, "line expected: #{line.inspect} " unless line.kind_of? AbstractLine
     return unified_node.add_line(posindex, line) if @unified
-    @lines << [posindex, line]
+    add_list_attr(:lines, [posindex, line])
   end
 
   def lines
@@ -143,19 +163,23 @@ class Node
 
   def each_line(&b) # :yields: line, posindex
     return unified_node.each_line(&b) if @unified
-    @lines.each {|posindex, line|
+    get_list_attr(:lines).each {|posindex, line|
       yield posindex, line
     }
   end
 
   def num_lines
     return unified_node.num_lines if @unified
-    @lines.length
+    count_list_attr(:lines)
+  end
+
+  def add_comment(comment)
+    add_list_attr(:comments, comment)
   end
 
   def mean_pos
     return unified_node.mean_pos if @unified
-    n = @lines.length
+    n = count_list_attr(:lines)
     if n == 0
       return nil
     end
@@ -179,10 +203,6 @@ class Node
       error = e if error < e
     }
     return error
-  end
-
-  def add_comment(comment)
-    @comments << comment
   end
 
 end
