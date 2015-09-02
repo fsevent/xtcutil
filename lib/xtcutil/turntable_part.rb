@@ -16,9 +16,8 @@ class TurntablePart < AbstractPart
         y1 = cy - radius * c
         line = StraightLine.new(self, x0, y0, x1, y1)
         line.set_line_name("T#{self.index}A#{"%.3f" % seg[:angle]}")
-        node_other_end = Node.new
+        node_other_end = line.get_node(1)
         node_other_end.add_comment("T#{self.index}TP_A#{"%.3f" % seg[:angle]}")
-        line.set_node(1, node_other_end)
         ary << line
       end
     }
@@ -34,15 +33,15 @@ class TurntablePart < AbstractPart
     ary = []
     a = 0
     lines.each {|l|
-      name = "a#{a += 1}"
-      ary << [name, [[l]]]
+      state = "a#{a += 1}"
+      ary << [state, [[l]]]
     }
     return @paths_ary = ary
   end
 
   def each_state_paths
-    paths_ary.each {|name, paths|
-      yield name, paths
+    paths_ary.each {|state, paths|
+      yield state, paths, true, false
     }
   end
 

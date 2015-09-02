@@ -61,16 +61,24 @@ class AbstractPart
   end
 
   def fetch_endpoint_node(ep)
-    @endpoint_node.fetch(ep)
+    node = @endpoint_node.fetch(ep)
+    @endpoint_node[ep] = node.unified_node
   end
 
   def get_endpoint_node(ep)
-    @endpoint_node[ep]
+    node = @endpoint_node[ep]
+    if node
+      @endpoint_node[ep] = node.unified_node
+    else
+      nil
+    end
   end
 
-  def each_path(&b)
-    each_state_paths {|name, paths|
-      paths.each(&b)
+  def each_path
+    each_state_paths {|name, paths, has_start_ep, has_end_ep|
+      paths.each {|path|
+        yield path, has_start_ep, has_end_ep
+      }
     }
   end
 

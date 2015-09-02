@@ -29,6 +29,6 @@ class CurvePart < AbstractPart
   end
 
   def each_state_paths
-    yield nil, paths_ary[0]
+    yield nil, paths_ary[0], true, true
   end
 end

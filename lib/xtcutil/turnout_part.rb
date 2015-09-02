@@ -60,7 +60,7 @@ class TurnoutPart < AbstractPart
 
   def each_state_paths
     paths_ary.each {|name, paths|
-      yield name, paths
+      yield name, paths, true, true
     }
   end
 

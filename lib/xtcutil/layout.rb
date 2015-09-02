@@ -54,12 +54,10 @@ class Layout
 
   def generate_graph
     return @node_ary if defined? @node_ary
-    node_ary = []
-    e_nodes = setup_inter_part_node(node_ary)
+    e_nodes = setup_inter_part_node
     connect_close_endpoints(e_nodes)
-    setup_intra_part_node(node_ary)
-    setup_other_node(node_ary)
-    node_ary = clean_nodes(node_ary)
+    setup_intra_part_node
+    node_ary = collect_nodes
     node_ary = reorder_nodes(node_ary)
     setup_node_name(node_ary)
     setup_line_name(node_ary)
@@ -67,7 +65,7 @@ class Layout
     @node_ary = node_ary
   end
 
-  def setup_inter_part_node(node_ary)
+  def setup_inter_part_node
     e_nodes = {}
     each_part {|obj|
       case obj
@@ -96,7 +94,6 @@ class Layout
           node.set_node_height(ep[:elev_height])
           node.set_uniq_attr(:defined_height, true)
         end
-        node_ary << node
         if ep[:type] == 'E' # unconnected endpoint
           e_nodes[node] = ep[:pos]
         else # ep[:type] == 'T' # connected endpoint
@@ -123,7 +120,6 @@ class Layout
           raise "inter part node angle too bend: #{angle1} #{angle2}"
         end
       }
-      node_ary.replace node_ary.reject {|n| !n.equal?(n.unified_node) }
     }
     e_nodes
   end
@@ -144,24 +140,21 @@ class Layout
     }
   end
 
-  def setup_intra_part_node(node_ary)
+  def setup_intra_part_node
     each_part {|part|
-      part.each_path {|path|
+      part.each_path {|path, has_start_ep, has_end_ep|
         startindex = startindex_for_path(path)
         if 0 < path.length
-          # Turntable set a node for a line already.
-          # The nodes has no corresponding endpoint in the turntable.
-          if !path[0].get_node(startindex[0])
+          if has_start_ep
             define_node(part, path[0], startindex[0])
           end
           last = path.length - 1
-          if !path[last].get_node(1-startindex[last])
+          if has_end_ep
             define_node(part, path[last], 1-startindex[last])
           end
         end
         1.upto(path.length-1) {|i|
-          connect_line(node_ary,
-                       path[i-1], 1-startindex[i-1],
+          connect_line(path[i-1], 1-startindex[i-1],
                        path[i], startindex[i])
         }
       }
@@ -207,57 +200,25 @@ class Layout
     ep = part.nearest_endpoint(pos)
     ep_node = part.fetch_endpoint_node(ep)
     line_node = line.get_node(posindex)
-    if line_node
-      line_node.unify_node(ep_node)
-    else
-      line.set_node(posindex, ep_node)
-    end
+    line_node.unify_node(ep_node)
   end
 
-  def connect_line(node_ary, line1, posindex1, line2, posindex2)
+  def connect_line(line1, posindex1, line2, posindex2)
     node1 = line1.get_node(posindex1)
     node2 = line2.get_node(posindex2)
-    if !node1
-      if !node2
-        node = Node.new
-        node.add_comment "T#{line1.part.index}"
-        node_ary << node
-        line1.set_node(posindex1, node)
-        line2.set_node(posindex2, node)
-      else
-        line1.set_node(posindex1, node2)
-      end
-    else
-      if !node2
-        line2.set_node(posindex2, node1)
-      else
-        node1.unify_node(node2)
-      end
-    end
+    node1.unify_node(node2)
   end
 
-  def setup_other_node(node_ary)
+  def collect_nodes
+    h = {}
     each_part {|part|
       part.each_track {|line|
         0.upto(1) {|i|
-          if !line.get_node(i)
-            node = Node.new
-            line.set_node(i, node)
-            node_ary << node
-          end
+          h[line.get_node(i).unified_node] = true
         }
       }
     }
-  end
-
-  def clean_nodes(node_ary)
-    node_ary = node_ary.reject {|node| !node.equal?(node.unified_node) }
-    node_ary.each {|node|
-      node.each_line {|posindex, line|
-        n0 = line.fetch_node(0)
-        n1 = line.fetch_node(1)
-      }
-    }
+    h.keys
   end
 
   def reorder_nodes(node_ary)
