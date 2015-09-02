@@ -26,4 +26,4 @@ Tanaka Akira
 
 ## Licence
 
-GPLv3 or later
+GPLv2 or later
