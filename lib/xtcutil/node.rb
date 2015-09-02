@@ -196,13 +196,13 @@ class Node
   def max_gap
     center = mean_pos
     return nil if !center
-    error = 0.0
+    gap = 0.0
     each_line {|posindex, line|
       pos = line.get_pos(posindex)
       e = hypot_pos(pos, center)
-      error = e if error < e
+      gap = e if gap < e
     }
-    return error
+    return gap
   end
 
 end
