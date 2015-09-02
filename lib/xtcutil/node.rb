@@ -67,10 +67,10 @@ class Node
     return unified_node.unify_node(node) if @unified
     node = node.unified_node
     if self.equal?(node)
-      return
+      return self
     end
     @uniq_attrs.each {|k, v1|
-      if node.has_uniq_attr?(k) && v1 != (v2 = node.uniq_attrs[k])
+      if node.has_uniq_attr?(k) && v1 != (v2 = node.fetch_uniq_attr(k))
         raise ArgumentError, "unique attribute has different value: #{k} : #{v1.inspect} and #{v2.inspect}"
       end
     }
@@ -87,6 +87,7 @@ class Node
     @unified = node
     @uniq_attrs = nil
     @list_attrs = nil
+    node
   end
 
   def has_uniq_attr?(k)
@@ -110,7 +111,7 @@ class Node
 
   def fetch_uniq_attr(k)
     return unified_node.fetch_node_name if @unified
-    raise "unique attribute not set: #{k}" if !@uniq_attrs.has_key(k)
+    raise "unique attribute not set: #{k}" if !@uniq_attrs.has_key?(k)
     @uniq_attrs[k]
   end
 

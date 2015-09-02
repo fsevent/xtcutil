@@ -68,7 +68,6 @@ class Layout
   end
 
   def setup_inter_part_node(node_ary)
-    hash = {}
     e_nodes = {}
     each_part {|obj|
       case obj
@@ -81,6 +80,7 @@ class Layout
         next
       end
       ep_num = 0
+      node_pairs = []
       obj.each_seg {|ep|
         next if ep[:type] != 'E' && ep[:type] != 'T'
         ep_num += 1
@@ -88,25 +88,6 @@ class Layout
         node.add_comment "T#{obj.index}EP#{ep_num}#{ep[:type]}"
         node.add_list_attr :ep_pos, ep[:pos]
         obj.set_endpoint_node ep, node
-        node_ary << node
-        hash[node] = [obj.index]
-        if ep[:type] == 'E' # unconnected endpoint
-          e_nodes[node] = ep[:pos]
-        else # ep[:type] == 'T' # connected endpoint
-          ep_index = ep[:index]
-          if obj.index < ep_index
-            hash[node] = [obj.index]
-          else
-            obj0 = parts_ary[ep_index]
-            ep0 = obj0.nearest_connected_endpoint(ep[:pos])
-            node0 = obj0.fetch_endpoint_node ep0
-            node0.unify_node(node)
-            hash[node] << obj.index
-            if 2 < hash[node].length
-              raise "too many node at #{ep[:pos].inspect}"
-            end
-          end
-        end
         if ep[:station_name] && /\S/ =~ ep[:station_name]
           node.set_node_name(ep[:station_name].strip.gsub(/\s+/, '_'))
         end
@@ -114,7 +95,25 @@ class Layout
           node.set_node_height(ep[:elev_height])
           node.set_uniq_attr(:defined_height, true)
         end
+        node_ary << node
+        if ep[:type] == 'E' # unconnected endpoint
+          e_nodes[node] = ep[:pos]
+        else # ep[:type] == 'T' # connected endpoint
+          ep_index = ep[:index]
+          obj0 = parts_ary[ep_index]
+          ep0 = obj0.nearest_connected_endpoint(ep[:pos])
+          node0 = obj0.get_endpoint_node ep0
+          node_pairs << [node, node0] if node0
+        end
       }
+      node_pairs.each {|node1, node2|
+        node = node1.unify_node(node2)
+        if 2 < node.count_list_attr(:ep_pos)
+          ep_pos_list = node.get_list_attr(:ep_pos)
+          raise "too many node at #{ep_pos_list[0].inspect}"
+        end
+      }
+      node_ary.replace node_ary.reject {|n| !n.equal?(n.unified_node) }
     }
     e_nodes
   end
