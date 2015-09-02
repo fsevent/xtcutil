@@ -121,7 +121,7 @@ def graph_to_json_data(layout)
           edges:startindex_linename_ary,
         }
         json_data << path_hash
-        # reverse path is also possible until we support spring point.
+        # reverse path is always available until we support spring point.
         path_hash = path_hash.dup
         path_hash[:edges] = path_hash[:edges].map {|i, line_name| [1-i, line_name] }.reverse
         json_data << path_hash
