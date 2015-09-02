@@ -112,19 +112,18 @@ def graph_to_json_data(layout)
     part.each_state_paths {|state, paths|
       paths.each {|path|
         startindex_ary = layout.startindex_for_path(path)
+        startindex_linename_ary = startindex_ary.zip(path).map {|i, line| [i, line.get_line_name] }
         state ||= ''
         path_hash = {
           type:"path",
           part:"T#{part.index}",
           state:state,
-          edges:path.map {|line| line.get_line_name},
-          startnodes:startindex_ary,
+          edges:startindex_linename_ary,
         }
         json_data << path_hash
         # reverse path is also possible until we support spring point.
         path_hash = path_hash.dup
-        path_hash[:edges] = path_hash[:edges].reverse
-        path_hash[:startnodes] = startindex_ary.reverse.map {|i| 1-i }
+        path_hash[:edges] = path_hash[:edges].map {|i, line_name| [1-i, line_name] }.reverse
         json_data << path_hash
       }
     }
