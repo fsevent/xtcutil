@@ -7,8 +7,7 @@ def main_help(argv)
 usage:
   xtcutil help
   xtcutil show file.xtc
-  xtcutil pdf file.xtc
-  xtcutil png file.xtc
+  xtcutil image file.xtc
   xtcutil parse-tree file.xtc
 End
 end
@@ -25,10 +24,8 @@ def main(argv)
     require 'xtcutil/cmd_graph'; main_graph(argv)
   when 'show'
     require 'xtcutil/cmd_show'; main_show(argv)
-  when 'pdf'
-    require 'xtcutil/cmd_pdf'; main_pdf(argv)
-  when 'png'
-    require 'xtcutil/cmd_png'; main_png(argv)
+  when 'image'
+    require 'xtcutil/cmd_image'; main_image(argv)
   when 'parse-tree'
     require 'xtcutil/cmd_parse_tree'; main_parse_tree(argv)
   else
