@@ -25,11 +25,12 @@ class AbstractPart
     segs.each(&b)
   end
 
-  def nearest_endpoint_internal(pos1, types)
+  def nearest_endpoint_internal(pos1, types, from_index)
     result_ep = nil
     result_distance = nil
     each_seg {|seg|
       next unless types.include? seg[:type]
+      next if from_index && from_index != seg[:index]
       pos2 = seg[:pos]
       distance = Math.hypot(pos1[0] - pos2[0], pos1[1] - pos2[1])
       if !result_ep
@@ -46,11 +47,15 @@ class AbstractPart
   end
 
   def nearest_connected_endpoint(pos1)
-    nearest_endpoint_internal(pos1, %w[T])
+    nearest_endpoint_internal(pos1, %w[T], nil)
   end
 
   def nearest_endpoint(pos1)
-    nearest_endpoint_internal(pos1, %w[T E])
+    nearest_endpoint_internal(pos1, %w[T E], nil)
+  end
+
+  def nearest_connected_endpoint_from(pos1, index)
+    nearest_endpoint_internal(pos1, %w[T], index)
   end
 
   def set_endpoint_node(ep, endpoint_node)

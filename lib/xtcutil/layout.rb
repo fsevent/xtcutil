@@ -99,7 +99,7 @@ class Layout
         else # ep[:type] == 'T' # connected endpoint
           ep_index = ep[:index]
           obj0 = parts_ary[ep_index]
-          ep0 = obj0.nearest_connected_endpoint(ep[:pos])
+          ep0 = obj0.nearest_connected_endpoint_from(ep[:pos], obj.index)
           node0 = obj0.get_endpoint_node ep0
           node_pairs << [node, node0] if node0
         end
@@ -108,7 +108,7 @@ class Layout
         node = node1.unify_node(node2)
         if 2 < node.count_list_attr(:ep_pos)
           ep_pos_list = node.get_list_attr(:ep_pos)
-          raise "too many node at #{ep_pos_list[0].inspect}"
+          raise "too many node at #{ep_pos_list[0].inspect}: #{node.get_list_attr(:comments).inspect}"
         end
         angle1, angle2 = node.get_list_attr(:ep_angle)
         tolerance = 45.0 * DEG_TO_RAD
