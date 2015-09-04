@@ -21,6 +21,20 @@ class XTCWindow < Gtk::Window
     end
     add @drawingarea
 
+    signal_connect "key_press_event" do |widget, event|
+      if event.state == 0
+        case event.keyval
+        when Gdk::Keyval::GDK_KEY_q
+          Gtk.main_quit()
+        end
+      elsif event.state == :control_mask
+        case event.keyval
+        when Gdk::Keyval::GDK_KEY_c
+          Gtk.main_quit()
+        end
+      end
+    end
+
     calc_scale
     set_default_size @window_w, @window_h
     set_window_position :center
