@@ -250,21 +250,37 @@ module Xtcutil
     end
 
     def setup_node_name(node_ary)
+      h = {}
+      node_ary.each {|n|
+        next unless name = n.get_node_name
+        h[name] = true
+      }
       i = 0
       node_ary.each {|n|
-        if !n.get_node_name
-          n.set_node_name("v#{i += 1}")
-        end
+        next if n.get_node_name
+        begin
+          name = "v#{i += 1}"
+        end while h.has_key? name
+        n.set_node_name(name)
       }
     end
 
     def setup_line_name(node_ary)
+      h = {}
+      node_ary.each {|n|
+        n.each_line {|tipindex, line|
+          next unless name = line.get_line_name
+          h[name] = true
+        }
+      }
       i = 0
       node_ary.each {|n|
         n.each_line {|tipindex, line|
-          if !line.get_line_name
-            line.set_line_name("e#{i += 1}")
-          end
+          next if line.get_line_name
+          begin
+            name = "e#{i += 1}"
+          end while h.has_key? name
+          line.set_line_name(name)
         }
       }
     end
