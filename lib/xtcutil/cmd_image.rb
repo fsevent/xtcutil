@@ -95,11 +95,7 @@ module Xtcutil
   def image_main(argv)
     image_op.parse!(argv)
     filename = argv[0]
-    params = {}
-    parsed = []
-    Xtcutil::Parser.open_xtc(filename) {|f|
-      Xtcutil::Parser.parse_io params, parsed, f
-    }
+    parsed = Xtcutil::Parser.parse_file(filename)
     layout = Layout.new(parsed)
     if $xtcutil_image_3d
       layout.generate_graph

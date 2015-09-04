@@ -106,11 +106,7 @@ module Xtcutil
 
   def show_main(argv)
     show_op.parse!(argv)
-    params = {}
-    parsed = []
-    Xtcutil::Parser.open_xtc(argv[0]) {|f|
-      Xtcutil::Parser.parse_io params, parsed, f
-    }
+    parsed = Xtcutil::Parser.parse_file(argv[0])
     layout = Xtcutil::Layout.new(parsed)
     if $xtcutil_show_3d
       layout.generate_graph

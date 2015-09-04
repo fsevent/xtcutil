@@ -609,5 +609,14 @@ module Xtcutil
       end
       File.open(filename, :external_encoding=>enc, &b)
     end
+
+    def parse_file(filename)
+      params = {}
+      parsed = []
+      open_xtc(filename) {|f|
+        parse_io params, parsed, f
+      }
+      parsed
+    end
   end
 end

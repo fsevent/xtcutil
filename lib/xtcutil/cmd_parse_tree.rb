@@ -7,11 +7,7 @@ module Xtcutil
 
   def parse_tree_main(argv)
     argv.each {|arg|
-      params = {}
-      parsed = []
-      Xtcutil::Parser.open_xtc(arg) {|f|
-        Xtcutil::Parser.parse_io params, parsed, f
-      }
+      parsed = Xtcutil::Parser.parse_file(arg)
       $stdout.puts JSON.pretty_generate(parsed)
     }
   end

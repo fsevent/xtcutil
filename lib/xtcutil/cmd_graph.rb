@@ -148,11 +148,7 @@ module Xtcutil
 
   def graph_main(argv)
     argv.each {|arg|
-      params = {}
-      parsed = []
-      Xtcutil::Parser.open_xtc(arg) {|f|
-        Xtcutil::Parser.parse_io params, parsed, f
-      }
+      parsed = Xtcutil::Parser.parse_file(arg)
       layout = Layout.new(parsed)
       json_data = graph_to_json_data(layout)
       graph_output_json(json_data)
