@@ -72,7 +72,7 @@ module Xtcutil
   def image_op
     op = OptionParser.new
     op.banner = 'Usage: xtcutil image [options] xtcfile'
-    op.def_option('--format=FORMAT', 'specify image format (png, pdf)') {|format|
+    op.def_option('--format=FORMAT', 'specify image format (png, pdf, svg)') {|format|
       $xtcutil_image_format = format
     }
     op.def_option('--3d=[ZSCALE]', 'view 3D') {|zscale|
