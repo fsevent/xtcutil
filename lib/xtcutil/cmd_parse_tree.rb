@@ -4,7 +4,7 @@ require 'xtcutil/parser'
 
 module Xtcutil
   class CmdParseTree
-    def main_parse_tree(argv)
+    def main(argv)
       argv.each {|arg|
         params = {}
         parsed = []

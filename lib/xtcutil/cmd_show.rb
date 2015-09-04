@@ -103,7 +103,7 @@ module Xtcutil
       op
     end
 
-    def main_show(argv)
+    def main(argv)
       op_show.parse!(argv)
       params = {}
       parsed = []

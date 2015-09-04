@@ -91,7 +91,7 @@ module Xtcutil
       op
     end
 
-    def main_image(argv)
+    def main(argv)
       op_image.parse!(argv)
       filename = argv[0]
       params = {}

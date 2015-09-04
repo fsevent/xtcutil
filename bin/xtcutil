@@ -24,13 +24,13 @@ End
     when 'help'
       main_help(argv)
     when 'graph'
-      require 'xtcutil/cmd_graph'; Xtcutil::CmdGraph.new.main_graph(argv)
+      require 'xtcutil/cmd_graph'; Xtcutil::CmdGraph.new.main(argv)
     when 'show'
-      require 'xtcutil/cmd_show'; Xtcutil::CmdShow.new.main_show(argv)
+      require 'xtcutil/cmd_show'; Xtcutil::CmdShow.new.main(argv)
     when 'image'
-      require 'xtcutil/cmd_image'; Xtcutil::CmdImage.new.main_image(argv)
+      require 'xtcutil/cmd_image'; Xtcutil::CmdImage.new.main(argv)
     when 'parse-tree'
-      require 'xtcutil/cmd_parse_tree'; Xtcutil::CmdParseTree.new.main_parse_tree(argv)
+      require 'xtcutil/cmd_parse_tree'; Xtcutil::CmdParseTree.new.main(argv)
     else
       $stderr.print "unexpected subcommand: #{subcommand}"
       exit false

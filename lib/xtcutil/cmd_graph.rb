@@ -145,7 +145,7 @@ module Xtcutil
       print "\n]\n"
     end
 
-    def main_graph(argv)
+    def main(argv)
       argv.each {|arg|
         params = {}
         parsed = []
