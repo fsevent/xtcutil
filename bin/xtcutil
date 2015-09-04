@@ -5,7 +5,7 @@ require 'pp'
 module Xtcutil
   module_function
 
-  def main_help(argv)
+  def help_main(argv)
     puts <<'End'
 usage:
   xtcutil help
@@ -22,17 +22,17 @@ End
     subcommand = argv.shift
     case subcommand
     when 'help'
-      main_help(argv)
+      help_main(argv)
     when 'graph'
-      require 'xtcutil/cmd_graph'; Xtcutil::CmdGraph.new.main(argv)
+      require 'xtcutil/cmd_graph'; Xtcutil.graph_main(argv)
     when 'show'
-      require 'xtcutil/cmd_show'; Xtcutil::CmdShow.new.main(argv)
+      require 'xtcutil/cmd_show'; Xtcutil.show_main(argv)
     when 'image'
-      require 'xtcutil/cmd_image'; Xtcutil::CmdImage.new.main(argv)
+      require 'xtcutil/cmd_image'; Xtcutil.image_main(argv)
     when 'parse-tree'
-      require 'xtcutil/cmd_parse_tree'; Xtcutil::CmdParseTree.new.main(argv)
+      require 'xtcutil/cmd_parse_tree'; Xtcutil.parse_tree_main(argv)
     else
-      $stderr.print "unexpected subcommand: #{subcommand}"
+      $stderr.puts "unexpected subcommand: #{subcommand}"
       exit false
     end
   end

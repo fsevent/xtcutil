@@ -63,61 +63,61 @@ module Xtcutil
     end
   end
 
-  class Xtcutil::CmdImage
-    $xtcutil_image_format = 'png'
-    $xtcutil_image_3d = nil
-    $xtcutil_image_size = nil
+  module_function
 
-    def op_image
-      op = OptionParser.new
-      op.banner = 'Usage: xtcutil image [options] xtcfile'
-      op.def_option('--format=FORMAT', 'specify image format (png, pdf)') {|format|
-        $xtcutil_image_format = format
-      }
-      op.def_option('--3d=[ZSCALE]', 'view 3D') {|zscale|
-        if zscale
-          $xtcutil_image_3d = zscale.to_f
-        else
-          $xtcutil_image_3d = 1.0
-        end
-      }
-      op.def_option('--size=WxH', 'specify image size for raster images') {|arg|
-        if /\A(\d+)x(\d+)\z/ !~ arg
-          STDERR.puts "invalid size option: #{arg}"
-          exit false
-        end
-        $xtcutil_image_size = [$1.to_i, $2.to_i]
-      }
-      op
-    end
+  $xtcutil_image_format = 'png'
+  $xtcutil_image_3d = nil
+  $xtcutil_image_size = nil
 
-    def main(argv)
-      op_image.parse!(argv)
-      filename = argv[0]
-      params = {}
-      parsed = []
-      Xtcutil::Parser.open_xtc(filename) {|f|
-        Xtcutil::Parser.parse_io params, parsed, f
-      }
-      layout = Layout.new(parsed)
-      if $xtcutil_image_3d
-        layout.generate_graph
-      end
-      imagecommand = ImageCommand.new(layout)
-      case $xtcutil_image_format
-      when 'png'
-        output_filename = filename.sub(/\.xtc\z/, '') + '.png'
-        imagecommand.generate_png(output_filename)
-      when 'pdf'
-        output_filename = filename.sub(/\.xtc\z/, '') + '.pdf'
-        imagecommand.generate_pdf(output_filename)
-      when 'svg'
-        output_filename = filename.sub(/\.xtc\z/, '') + '.svg'
-        imagecommand.generate_svg(output_filename)
+  def image_op
+    op = OptionParser.new
+    op.banner = 'Usage: xtcutil image [options] xtcfile'
+    op.def_option('--format=FORMAT', 'specify image format (png, pdf)') {|format|
+      $xtcutil_image_format = format
+    }
+    op.def_option('--3d=[ZSCALE]', 'view 3D') {|zscale|
+      if zscale
+        $xtcutil_image_3d = zscale.to_f
       else
-        $stderr.puts "unexpected image format: #{$xtcutil_image_format}"
+        $xtcutil_image_3d = 1.0
+      end
+    }
+    op.def_option('--size=WxH', 'specify image size for raster images') {|arg|
+      if /\A(\d+)x(\d+)\z/ !~ arg
+        STDERR.puts "invalid size option: #{arg}"
         exit false
       end
+      $xtcutil_image_size = [$1.to_i, $2.to_i]
+    }
+    op
+  end
+
+  def image_main(argv)
+    image_op.parse!(argv)
+    filename = argv[0]
+    params = {}
+    parsed = []
+    Xtcutil::Parser.open_xtc(filename) {|f|
+      Xtcutil::Parser.parse_io params, parsed, f
+    }
+    layout = Layout.new(parsed)
+    if $xtcutil_image_3d
+      layout.generate_graph
+    end
+    imagecommand = ImageCommand.new(layout)
+    case $xtcutil_image_format
+    when 'png'
+      output_filename = filename.sub(/\.xtc\z/, '') + '.png'
+      imagecommand.generate_png(output_filename)
+    when 'pdf'
+      output_filename = filename.sub(/\.xtc\z/, '') + '.pdf'
+      imagecommand.generate_pdf(output_filename)
+    when 'svg'
+      output_filename = filename.sub(/\.xtc\z/, '') + '.svg'
+      imagecommand.generate_svg(output_filename)
+    else
+      $stderr.puts "unexpected image format: #{$xtcutil_image_format}"
+      exit false
     end
   end
 end
