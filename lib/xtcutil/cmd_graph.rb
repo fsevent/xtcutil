@@ -49,7 +49,7 @@ def graph_to_json_data(layout)
           indexes[min_j].concat indexes.delete_at(min_j+1)
         else
           is1 = indexes.shift
-          indexes.last << is1
+          indexes.last.concat is1
         end
       end
       is0, is1 = indexes
