@@ -9,6 +9,7 @@ module Xtcutil
     puts <<'End'
 usage:
   xtcutil help
+  xtcutil graph file.xtc
   xtcutil show file.xtc
   xtcutil image file.xtc
   xtcutil parse-tree file.xtc
