@@ -41,6 +41,14 @@ class ImageCommand
     ctx.target.finish
   end
 
+  def generate_svg(output_filename)
+    surface = Cairo::SVGSurface.new(output_filename, @image_w, @image_h)
+    ctx = Cairo::Context.new(surface)
+    draw_xtc ctx
+    ctx.show_page
+    ctx.target.finish
+  end
+
   def draw_xtc ctx
     ctx.save {
       ctx.translate 0, @image_h
@@ -101,6 +109,9 @@ def main_image(argv)
   when 'pdf'
     output_filename = filename.sub(/\.xtc\z/, '') + '.pdf'
     imagecommand.generate_pdf(output_filename)
+  when 'svg'
+    output_filename = filename.sub(/\.xtc\z/, '') + '.svg'
+    imagecommand.generate_svg(output_filename)
   else
     $stderr.puts "unexpected image format: #{$xtcutil_image_format}"
     exit false
