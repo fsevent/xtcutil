@@ -54,7 +54,7 @@ module Xtcutil
       @scale = [scale_x, scale_y].min
       @window_w = (w * @scale).to_i
       @window_h = (h * @scale).to_i
-      if $xtcutil_show_3d
+      if $xtcutil_window_3d
         max_z = 0.0
         @layout.generate_graph.each {|node|
           z = node.get_node_height
@@ -62,7 +62,7 @@ module Xtcutil
             max_z = z
           end
         }
-        @window_h += max_z * $xtcutil_show_3d
+        @window_h += max_z * $xtcutil_window_3d
         @max_z = max_z
       else
         @max_z = 0.0
@@ -78,8 +78,8 @@ module Xtcutil
       ctx.save {
         ctx.translate 0, @window_h
         ctx.scale @scale, -@scale
-        if $xtcutil_show_3d
-          @layout.cairo_draw3d_layout ctx, $xtcutil_show_3d
+        if $xtcutil_window_3d
+          @layout.cairo_draw3d_layout ctx, $xtcutil_window_3d
         else
           @layout.cairo_draw_layout ctx
         end
@@ -89,26 +89,26 @@ module Xtcutil
 
   module_function
 
-  $xtcutil_show_3d = nil
+  $xtcutil_window_3d = nil
 
-  def show_op
+  def window_op
     op = OptionParser.new
-    op.banner = 'Usage: xtcutil show [options] xtcfile'
+    op.banner = 'Usage: xtcutil window [options] xtcfile'
     op.def_option('--3d=[ZSCALE]', 'view 3D') {|zscale|
       if zscale
-        $xtcutil_show_3d = zscale.to_f
+        $xtcutil_window_3d = zscale.to_f
       else
-        $xtcutil_show_3d = 1.0
+        $xtcutil_window_3d = 1.0
       end
     }
     op
   end
 
-  def show_main(argv)
-    show_op.parse!(argv)
+  def window_main(argv)
+    window_op.parse!(argv)
     parsed = Xtcutil::Parser.parse_file(argv[0])
     layout = Xtcutil::Layout.new(parsed)
-    if $xtcutil_show_3d
+    if $xtcutil_window_3d
       layout.generate_graph
     end
     Gtk.init

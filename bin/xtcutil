@@ -10,7 +10,7 @@ module Xtcutil
 usage:
   xtcutil help
   xtcutil graph file.xtc
-  xtcutil show file.xtc
+  xtcutil window file.xtc
   xtcutil image file.xtc
   xtcutil parse-tree file.xtc
 End
@@ -26,14 +26,14 @@ End
       help_main(argv)
     when 'graph'
       require 'xtcutil/cmd_graph'; Xtcutil.graph_main(argv)
-    when 'show'
-      require 'xtcutil/cmd_show'; Xtcutil.show_main(argv)
+    when 'window'
+      require 'xtcutil/cmd_window'; Xtcutil.window_main(argv)
     when 'image'
       require 'xtcutil/cmd_image'; Xtcutil.image_main(argv)
     when 'parse-tree'
       require 'xtcutil/cmd_parse_tree'; Xtcutil.parse_tree_main(argv)
     else
-      $stderr.puts "unexpected subcommand: #{subcommand}"
+      $stderr.puts "unexpected subcommand: #{subcommand} (use \"xtcutil help\" to list subcommands)"
       exit false
     end
   end
