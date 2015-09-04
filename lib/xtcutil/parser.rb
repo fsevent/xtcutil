@@ -592,6 +592,9 @@ def parse_io(params, result, io)
       result << { type: 'unexpected', lineno: io.lineno, line: line }
     end
   end
+  objects = []
+  result = Marshal.load(Marshal.dump(result), lambda {|obj| objects << obj; obj })
+  objects.each {|obj| obj.freeze }
   result
 end
 
