@@ -2,36 +2,40 @@
 
 require 'pp'
 
-def main_help(argv)
-  puts <<'End'
+module Xtcutil
+  module_function
+
+  def main_help(argv)
+    puts <<'End'
 usage:
   xtcutil help
   xtcutil show file.xtc
   xtcutil image file.xtc
   xtcutil parse-tree file.xtc
 End
+  end
+
+  def main(argv)
+    if argv.empty?
+      argv.unshift 'help'
+    end
+    subcommand = argv.shift
+    case subcommand
+    when 'help'
+      main_help(argv)
+    when 'graph'
+      require 'xtcutil/cmd_graph'; Xtcutil::CmdGraph.new.main_graph(argv)
+    when 'show'
+      require 'xtcutil/cmd_show'; Xtcutil::CmdShow.new.main_show(argv)
+    when 'image'
+      require 'xtcutil/cmd_image'; Xtcutil::CmdImage.new.main_image(argv)
+    when 'parse-tree'
+      require 'xtcutil/cmd_parse_tree'; Xtcutil::CmdParseTree.new.main_parse_tree(argv)
+    else
+      $stderr.print "unexpected subcommand: #{subcommand}"
+      exit false
+    end
+  end
 end
 
-def main(argv)
-  if argv.empty?
-    argv.unshift 'help'
-  end
-  subcommand = argv.shift
-  case subcommand
-  when 'help'
-    main_help(argv)
-  when 'graph'
-    require 'xtcutil/cmd_graph'; main_graph(argv)
-  when 'show'
-    require 'xtcutil/cmd_show'; main_show(argv)
-  when 'image'
-    require 'xtcutil/cmd_image'; main_image(argv)
-  when 'parse-tree'
-    require 'xtcutil/cmd_parse_tree'; main_parse_tree(argv)
-  else
-    $stderr.print "unexpected subcommand: #{subcommand}"
-    exit false
-  end
-end
-
-main ARGV
+Xtcutil.main ARGV

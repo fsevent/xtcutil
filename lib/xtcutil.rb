@@ -1,3 +1,6 @@
+module Xtcutil
+end
+
 require 'xtcutil/mathutils'
 require 'xtcutil/parser'
 require 'xtcutil/node'
