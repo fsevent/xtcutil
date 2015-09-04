@@ -99,7 +99,7 @@ class Layout
         else # ep[:type] == 'T' # connected endpoint
           ep_index = ep[:index]
           obj0 = parts_ary[ep_index]
-          ep0 = obj0.nearest_connected_endpoint_from(ep[:pos], obj.index)
+          ep0 = obj0.nearest_connected_endpoint_from(ep[:pos], obj.index, ep_num)
           node0 = obj0.get_endpoint_node ep0
           node_pairs << [node, node0] if node0
         end
