@@ -39,8 +39,8 @@ class AbstractPart
         # don't connect to itself.
         next if from_index == self.index && from_ep_num == ep_num
       end
-      pos2 = seg[:pos]
-      distance = Math.hypot(pos1[0] - pos2[0], pos1[1] - pos2[1])
+      pos2 = Vector[*seg[:pos]]
+      distance = (pos1 - pos2).r
       if !result_ep
         result_ep = seg
         result_distance = distance

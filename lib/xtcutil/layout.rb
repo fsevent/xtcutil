@@ -84,7 +84,7 @@ class Layout
         ep_num += 1
         node = Node.new
         node.add_comment "T#{obj.index}EP#{ep_num}#{ep[:type]}"
-        node.add_list_attr :ep_pos, ep[:pos]
+        node.add_list_attr :ep_pos, Vector[*ep[:pos]]
         node.add_list_attr :ep_angle, ((90 - ep[:angle]) % 360) * DEG_TO_RAD
         obj.set_endpoint_node ep, node
         if ep[:station_name] && /\S/ =~ ep[:station_name]
@@ -95,11 +95,12 @@ class Layout
           node.set_uniq_attr(:defined_height, true)
         end
         if ep[:type] == 'E' # unconnected endpoint
-          e_nodes[node] = ep[:pos]
+          e_nodes[node] = Vector[*ep[:pos]]
         else # ep[:type] == 'T' # connected endpoint
           ep_index = ep[:index]
+          ep_pos = Vector[*ep[:pos]]
           obj0 = parts_ary[ep_index]
-          ep0 = obj0.nearest_connected_endpoint_from(ep[:pos], obj.index, ep_num)
+          ep0 = obj0.nearest_connected_endpoint_from(ep_pos, obj.index, ep_num)
           node0 = obj0.get_endpoint_node ep0
           node_pairs << [node, node0] if node0
         end
@@ -108,7 +109,7 @@ class Layout
         node = node1.unify_node(node2)
         if 2 < node.count_list_attr(:ep_pos)
           ep_pos_list = node.get_list_attr(:ep_pos)
-          raise "too many node at #{ep_pos_list[0].inspect}: #{node.get_list_attr(:comments).inspect}"
+          raise "too many node at #{ep_pos_list[0].to_a.inspect}: #{node.get_list_attr(:comments).inspect}"
         end
         angle1, angle2 = node.get_list_attr(:ep_angle)
         tolerance = 45.0 * DEG_TO_RAD
@@ -132,7 +133,7 @@ class Layout
         n1, pos1 = e_nodes[j]
         break if threshold <= pos0[0] - pos1[0]
         next if threshold <= (pos0[1] - pos1[1]).abs
-        if hypot_pos(pos0, pos1) < threshold
+        if (pos0-pos1).r < threshold
           n0.unify_node(n1)
           break
         end
@@ -171,7 +172,7 @@ class Layout
       i0, j0, d0 = nil, nil, nil
       0.upto(1) {|i|
         0.upto(1) {|j|
-          d = hypot_pos(path[0].get_pos(i), path[1].get_pos(j))
+          d = (path[0].get_pos(i) - path[1].get_pos(j)).r
           if d0.nil? || d < d0
             i0, j0, d0 = i, j, d
           end
@@ -183,8 +184,8 @@ class Layout
       2.upto(path.length-1) {|i|
         last_endindex = 1 - startindex[-1]
         last_pos = path[i-1].get_pos(last_endindex)
-        d0 = hypot_pos(last_pos, path[i].pos0)
-        d1 = hypot_pos(last_pos, path[i].pos1)
+        d0 = (last_pos - path[i].pos0).r
+        d1 = (last_pos - path[i].pos1).r
         if d0 < d1
           startindex << 0
         else

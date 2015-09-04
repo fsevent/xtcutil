@@ -1,19 +1,16 @@
 class StraightLine < AbstractLine
-  def initialize(part, x0, y0, x1, y1)
-    pos0 = [x0, y0].freeze
-    pos1 = [x1, y1].freeze
-    dir_angle0 = Math.atan2(y0-y1, x0-x1) % (2 * Math::PI)
+  def initialize(part, pos0, pos1)
+    vec = pos0-pos1
+    dir_angle0 = Math.atan2(vec[1], vec[0]) % (2 * Math::PI)
     dir_angle1 = (dir_angle0 + Math::PI) % (2 * Math::PI)
     super part, pos0, pos1, dir_angle0, dir_angle1
-    @x0 = x0
-    @y0 = y0
-    @x1 = x1
-    @y1 = y1
+    @pos0 = pos0
+    @pos1 = pos1
   end
-  attr_reader :x0, :y0, :x1, :y1
+  attr_reader :pos0, :pos1
 
   def distance
-    hypot_pos(pos0, pos1)
+    (pos0 - pos1).r
   end
 
   def vector(tipindex)

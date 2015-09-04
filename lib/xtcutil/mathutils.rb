@@ -12,17 +12,17 @@ def matrix_rotate(rad)
   ]
 end
 
-def matrix_translate(x, y)
+def matrix_translate(vec)
   Matrix[
-    [1.0, 0.0, x],
-    [0.0, 1.0, y],
+    [1.0, 0.0, vec[0]],
+    [0.0, 1.0, vec[1]],
     [0.0, 0.0, 1.0]
   ]
 end
 
-def affine_transform(mat, x, y)
-  x, y, _ = (mat * Vector[x, y, 1.0]).to_a
-  return x, y
+def affine_transform(mat, pos)
+  x, y, _ = (mat * Vector[pos[0], pos[1], 1.0]).to_a
+  return Vector[x, y]
 end
 
 def rotate_angle(mat, rad)
@@ -30,8 +30,3 @@ def rotate_angle(mat, rad)
   s = mat[1,0]
   rad + Math.atan2(s, c)
 end
-
-def hypot_pos(pos0, pos1)
-  Math.hypot(pos0[0] - pos1[0], pos0[1] - pos1[1])
-end
-

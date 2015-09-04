@@ -1,9 +1,9 @@
 class StraightPart < AbstractPart
   def lines
     return @lines if defined? @lines
-    x0, y0 = @h[:segs][0][:pos]
-    x1, y1 = @h[:segs][1][:pos]
-    ary = [StraightLine.new(self, x0, y0, x1, y1)]
+    @pos0 = Vector[*@h[:segs][0][:pos]]
+    @pos1 = Vector[*@h[:segs][1][:pos]]
+    ary = [StraightLine.new(self, @pos0, @pos1)]
     return @lines = ary
   end
 

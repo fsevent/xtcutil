@@ -2,37 +2,37 @@ class TurnoutPart < AbstractPart
   def lines
     return @lines if defined? @lines
     mat = Matrix.I(3)
-    ox, oy = @h[:orig]
-    angle = @h[:angle]
-    mat = mat * matrix_translate(ox, oy)
-    mat = mat * matrix_rotate(-angle * DEG_TO_RAD)
+    orig = Vector[*@h[:orig]]
+    angle = @h[:angle] * DEG_TO_RAD
+    mat = mat * matrix_translate(orig)
+    mat = mat * matrix_rotate(-angle)
     ary = []
     @h[:segs].each {|seg|
       case seg[:type]
       when 'S'
-        x0, y0 = seg[:pos0]
-        x1, y1 = seg[:pos1]
-        x0, y0 = affine_transform(mat, x0, y0)
-        x1, y1 = affine_transform(mat, x1, y1)
-        ary << StraightLine.new(self, x0, y0, x1, y1)
+        pos0 = Vector[*seg[:pos0]]
+        pos1 = Vector[*seg[:pos1]]
+        pos0 = affine_transform(mat, pos0)
+        pos1 = affine_transform(mat, pos1)
+        ary << StraightLine.new(self, pos0, pos1)
       when 'C'
-        cx, cy = seg[:center]
+        center = Vector[*seg[:center]]
         radius = seg[:radius]
         if 0 < radius
           a0 = (90-(seg[:a0]+seg[:a1])) * DEG_TO_RAD
           a1 = (90-seg[:a0]) * DEG_TO_RAD
-          cx, cy = affine_transform(mat, cx, cy)
+          center = affine_transform(mat, center)
           a1 = rotate_angle(mat, a1)
           a0 = rotate_angle(mat, a0)
         else
           a0 = (90-(seg[:a0]+seg[:a1])) * DEG_TO_RAD
           a1 = (90-seg[:a0]) * DEG_TO_RAD
-          cx, cy = affine_transform(mat, cx, cy)
+          center = affine_transform(mat, center)
           radius = -radius
           a0 = rotate_angle(mat, a0)
           a1 = rotate_angle(mat, a1)
         end
-        ary << CurveLine.new(self, cx, cy, radius, a0, a1)
+        ary << CurveLine.new(self, center, radius, a0, a1)
       end
     }
     return @lines = ary

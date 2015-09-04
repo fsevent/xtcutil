@@ -1,7 +1,7 @@
 class CurvePart < AbstractPart
   def lines
     return @lines if defined? @lines
-    cx, cy = @h[:pos]
+    center = Vector[*@h[:pos]]
     radius = @h[:radius]
     a0 = @h[:segs][1][:angle]
     a1 = @h[:segs][0][:angle]
@@ -15,7 +15,7 @@ class CurvePart < AbstractPart
     while a0 > a1
       a1 += 2*Math::PI
     end
-    ary = [CurveLine.new(self, cx, cy, radius, a0, a1)]
+    ary = [CurveLine.new(self, center, radius, a0, a1)]
     return @lines = ary
   end
 

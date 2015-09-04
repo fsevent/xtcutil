@@ -7,7 +7,7 @@ def graph_to_json_data(layout)
   line_visited = {}
   json_data = []
   graph.each {|n|
-    pos = n.mean_pos
+    pos = n.mean_pos.to_a
     pos = [nil, nil] if !pos
     pos << n.get_node_height
     node_hash = {
@@ -72,10 +72,10 @@ def graph_to_json_data(layout)
         name:line.get_line_name,
         part:"T#{line.part.index}",
         angle0:line.dir_angle0,
-        pos0:line.pos0,
+        pos0:line.pos0.to_a,
         node0:line.get_node(0).get_node_name,
         node1:line.get_node(1).get_node_name,
-        pos1:line.pos1,
+        pos1:line.pos1.to_a,
         angle1:line.dir_angle1,
         distance:line.distance,
       }
@@ -89,7 +89,7 @@ def graph_to_json_data(layout)
         line_hash = {
           type:"curveline",
           name:line.get_line_name,
-          center:[line.cx, line.cy],
+          center:line.center.to_a,
           radius:line.radius,
           angle0:line.a0,
           angle1:line.a1,

@@ -199,7 +199,7 @@ class Node
       x += pos[0]
       y += pos[1]
     }
-    [x / n, y / n]
+    Vector[x / n, y / n]
   end
 
   def max_gap
@@ -208,7 +208,7 @@ class Node
     gap = 0.0
     each_line {|tipindex, line|
       pos = line.get_pos(tipindex)
-      e = hypot_pos(pos, center)
+      e = (pos - center).r
       gap = e if gap < e
     }
     return gap

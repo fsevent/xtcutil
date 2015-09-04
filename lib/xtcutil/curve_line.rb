@@ -1,24 +1,23 @@
 class CurveLine < AbstractLine
-  def initialize(part, cx, cy, radius, a0, a1)
+  def initialize(part, center, radius, a0, a1)
     raise "curveline constraint violation: #{a0} > #{a1} (should be a0 <= a1)" if a0 > a1
-    pos0 = [
-      cx + radius * Math.cos(a0),
-      cy + radius * Math.sin(a0)
+    pos0 = Vector[
+      center[0] + radius * Math.cos(a0),
+      center[1] + radius * Math.sin(a0)
     ].freeze
-    pos1 = [
-      cx + radius * Math.cos(a1),
-      cy + radius * Math.sin(a1)
+    pos1 = Vector[
+      center[0] + radius * Math.cos(a1),
+      center[1] + radius * Math.sin(a1)
     ].freeze
     dir_angle0 = (a0 - Math::PI/2) % (2 * Math::PI)
     dir_angle1 = (a1 + Math::PI/2) % (2 * Math::PI)
     super part, pos0, pos1, dir_angle0, dir_angle1
-    @cx = cx
-    @cy = cy
+    @center = center
     @radius = radius
     @a0 = a0
     @a1 = a1
   end
-  attr_reader :cx, :cy, :radius, :a0, :a1
+  attr_reader :center, :radius, :a0, :a1
 
   def distance
     @radius * (@a1 - @a0)

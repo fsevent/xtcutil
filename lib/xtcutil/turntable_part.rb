@@ -1,20 +1,17 @@
 class TurntablePart < AbstractPart
   def lines
     return @lines if defined? @lines
-    cx, cy = @h[:pos]
+    center = Vector[*@h[:pos]]
     radius = @h[:radius]
     ary = []
     @h[:segs].each {|seg|
       case seg[:type]
       when 'T'
         a = seg[:angle] * DEG_TO_RAD
-        s = Math.sin(a)
-        c = Math.cos(a)
-        x0 = cx + radius * s
-        y0 = cy + radius * c
-        x1 = cx - radius * s
-        y1 = cy - radius * c
-        line = StraightLine.new(self, x0, y0, x1, y1)
+        vec = Vector[Math.sin(a), Math.cos(a)]
+        pos0 = center + vec * radius
+        pos1 = center - vec * radius
+        line = StraightLine.new(self, pos0, pos1)
         node_other_end = line.get_node(1)
         node_other_end.add_comment("T#{self.index}TP_A#{"%.3f" % seg[:angle]}")
         ary << line
