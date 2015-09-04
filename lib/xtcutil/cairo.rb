@@ -17,7 +17,7 @@ module Xtcutil
     end
   end
 
-  class Xtcutil::StraightLine
+  class StraightLine
     def cairo_draw(ctx)
       ctx.move_to(@pos0[0], @pos0[1])
       ctx.line_to(@pos1[0], @pos1[1])
@@ -37,7 +37,7 @@ module Xtcutil
     end
   end
 
-  class Xtcutil::CurveLine
+  class CurveLine
     def cairo_draw(ctx)
       ctx.arc(@center[0], @center[1], @radius, @a0, @a1)
       ctx.stroke
@@ -71,21 +71,19 @@ module Xtcutil
     end
   end
 
-  module Xtcutil::CairoUtil
-    module_function
-
-    def cairo_draw_layout layout, ctx
+  class Layout
+    def cairo_draw_layout ctx
       ctx.set_line_width 0.5
-      layout.each_part {|part|
+      self.each_part {|part|
         part.each_track {|track|
           track.cairo_draw(ctx)
         }
       }
     end
 
-    def cairo_draw3d_layout layout, ctx, zscale=3.0
+    def cairo_draw3d_layout ctx, zscale=3.0
       ctx.set_line_width 0.5
-      layout.each_part {|part|
+      self.each_part {|part|
         part.each_track {|track|
           track.cairo_draw3d(ctx, zscale)
         }

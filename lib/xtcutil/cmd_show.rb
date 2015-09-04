@@ -79,9 +79,9 @@ module Xtcutil
         ctx.translate 0, @window_h
         ctx.scale @scale, -@scale
         if $xtcutil_show_3d
-          CairoUtil.cairo_draw3d_layout @layout, ctx, $xtcutil_show_3d
+          @layout.cairo_draw3d_layout ctx, $xtcutil_show_3d
         else
-          CairoUtil.cairo_draw_layout @layout, ctx
+          @layout.cairo_draw_layout ctx
         end
       }
     end

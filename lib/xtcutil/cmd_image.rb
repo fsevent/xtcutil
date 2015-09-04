@@ -55,9 +55,9 @@ module Xtcutil
         ctx.translate 0, @image_h
         ctx.scale @scale, -@scale
         if $xtcutil_image_3d
-          CairoUtil.cairo_draw3d_layout @layout, ctx, $xtcutil_image_3d
+          @layout.cairo_draw3d_layout ctx, $xtcutil_image_3d
         else
-          CairoUtil.cairo_draw_layout @layout, ctx
+          @layout.cairo_draw_layout ctx
         end
       }
     end
