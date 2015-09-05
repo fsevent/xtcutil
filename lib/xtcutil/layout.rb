@@ -56,7 +56,7 @@ module Xtcutil
     def generate_graph
       return @node_ary if defined? @node_ary
       e_nodes = setup_inter_part_node
-      connect_close_endpoints(e_nodes)
+      warn_too_close_endpoints(e_nodes)
       setup_intra_part_node
       node_ary = collect_nodes
       node_ary = reorder_nodes(node_ary)
@@ -80,6 +80,7 @@ module Xtcutil
         end
         ep_num = 0
         node_pairs = []
+        obj_nodes = []
         obj.each_seg {|ep|
           next if ep[:type] != 'E' && ep[:type] != 'T'
           ep_num += 1
@@ -88,6 +89,7 @@ module Xtcutil
           node.add_list_attr :ep_pos, Vector[*ep[:pos]]
           node.add_list_attr :ep_angle, ((90 - ep[:angle]) % 360) * DEG_TO_RAD
           obj.set_endpoint_node ep, node
+          obj_nodes << node
           if ep[:station_name] && /\S/ =~ ep[:station_name]
             node.set_node_name(ep[:station_name].strip.gsub(/\s+/, '_'))
           end
@@ -106,6 +108,11 @@ module Xtcutil
             node_pairs << [node, node0] if node0
           end
         }
+        if obj.kind_of?(CurvePart) && obj.circle? #&& obj_nodes.length == 2
+          e_nodes.delete obj_nodes[0]
+          e_nodes.delete obj_nodes[1]
+          node_pairs << [obj_nodes[0], obj_nodes[1]]
+        end
         node_pairs.each {|node1, node2|
           node = node1.unify_node(node2)
           if 2 < node.count_list_attr(:ep_pos)
@@ -126,7 +133,7 @@ module Xtcutil
       e_nodes
     end
 
-    def connect_close_endpoints(e_nodes)
+    def warn_too_close_endpoints(e_nodes)
       threshold = 0.1 # nodes nearer than threshold are unified.
       e_nodes = e_nodes.to_a.sort_by {|n, pos| pos[0] } # sort by x.
       e_nodes.each_with_index {|(n0, pos0), i|
@@ -135,7 +142,11 @@ module Xtcutil
           break if threshold <= pos0[0] - pos1[0]
           next if threshold <= (pos0[1] - pos1[1]).abs
           if (pos0-pos1).r < threshold
-            n0.unify_node(n1)
+            comments0 = n0.get_list_attr(:comments).join
+            comments1 = n1.get_list_attr(:comments).join
+            ep_str0 = "#{comments0}(#{pos0[0]},#{pos0[1]})"
+            ep_str1 = "#{comments1}(#{pos1[0]},#{pos1[1]})"
+            warn "too close unconnected endpoints: #{ep_str0} #{ep_str1}"
             break
           end
         }

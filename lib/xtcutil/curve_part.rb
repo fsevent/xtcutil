@@ -1,5 +1,11 @@
 module Xtcutil
   class CurvePart < Xtcutil::AbstractPart
+    def circle?
+      a0 = @h[:segs][0][:angle]
+      a1 = @h[:segs][1][:angle]
+      a0 == 270.0 && a1 == 90.0
+    end
+
     def lines
       return @lines if defined? @lines
       center = Vector[*@h[:pos]]

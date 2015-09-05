@@ -35,7 +35,7 @@ module Xtcutil
         node_hash[:edges1] = []
       elsif lines.length == 2
         node_hash[:edges0] = [lines[0][1], lines[0][2].get_line_name]
-        node_hash[:edges1] = [lines[0][1], lines[1][2].get_line_name]
+        node_hash[:edges1] = [lines[1][1], lines[1][2].get_line_name]
       else # lines.length > 2
         lines = lines.sort_by {|dir_angle, tipindex, line| dir_angle }
         indexes = (0...lines.length).map {|i| [i] }
