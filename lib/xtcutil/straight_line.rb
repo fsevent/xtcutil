@@ -14,6 +14,10 @@ module Xtcutil
       (pos0 - pos1).r
     end
 
+    def radius
+      Float::INFINITY
+    end
+
     def vector(tipindex)
       raise "unexpected pos index: #{i}" if i != 0 && i != 1
       return @vector if defined? @vector

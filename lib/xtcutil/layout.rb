@@ -236,6 +236,11 @@ module Xtcutil
 
     def reorder_nodes(node_ary)
       h = {}
+      nodes_with_pos, nodes_without_pos = node_ary.partition {|n|
+        n.mean_pos != nil
+      }
+      nodes_with_pos = nodes_with_pos.sort_by {|n| n.mean_pos[0] }
+      node_ary = nodes_with_pos + nodes_without_pos
       [
         lambda {|n| n.num_lines < 2 },
         lambda {|n| n.num_lines > 2 },
@@ -244,14 +249,24 @@ module Xtcutil
         node_ary.each {|n0|
           next if h.has_key? n0
           if node_selector.call(n0)
-            q = [n0]
+            q = [[n0, nil]]
             until q.empty?
-              n1 = q.pop
+              n1, angle1 = q.pop
               h[n1] = h.size
+              if angle1
+                n1.reorder_lines_by {|dir_angle, tipindex, line|
+                  angle2 = line.get_dir_angle(tipindex)
+                  [0 < Math.cos(angle1-angle2) ? 0 : 1, line.radius]
+                }
+              else
+                n1.reorder_lines_by {|dir_angle, tipindex, line|
+                  line.radius
+                }
+              end
               n1.each_line {|tipindex, line|
                 n2 = line.get_node(1-tipindex)
                 next if h.has_key? n2
-                q.push n2
+                q.push [n2, line.get_dir_angle(1-tipindex)]
               }
             end
           end

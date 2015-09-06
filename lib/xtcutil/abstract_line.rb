@@ -28,7 +28,7 @@ module Xtcutil
     alias inspect pretty_print_inspect
 
     def get_pos(i)
-      raise "unexpected pos index: #{i}" if i != 0 && i != 1
+      raise "unexpected tip index: #{i}" if i != 0 && i != 1
       if i == 0
         @pos0
       else
@@ -51,13 +51,22 @@ module Xtcutil
     end
 
     def get_node(i)
-      raise "unexpected node index: #{i}" if i != 0 && i != 1
+      raise "unexpected tip index: #{i}" if i != 0 && i != 1
       node = @nodes[i]
       @nodes[i] = node.unified_node
     end
 
     def fetch_node(i)
       get_node(i)
+    end
+
+    def get_dir_angle(i)
+      raise "unexpected tip index: #{i}" if i != 0 && i != 1
+      if i == 0
+        dir_angle0
+      else # i == 1
+        dir_angle1
+      end
     end
   end
 end

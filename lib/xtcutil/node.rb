@@ -140,6 +140,14 @@ module Xtcutil
       end
     end
 
+    def reorder_list_attr_by(k, &b)
+      list = get_list_attr(k)
+      if list && 1 < list.length
+        @list_attrs[k] = list.sort_by(&b)
+      end
+      nil
+    end
+
     def set_node_name(name) set_uniq_attr(:node_name, name) end
     def get_node_name() get_uniq_attr(:node_name) end
     def fetch_node_name() fetch_uniq_attr(:node_name) end
@@ -162,6 +170,10 @@ module Xtcutil
         ary << [tipindex, line]
       }
       ary
+    end
+
+    def reorder_lines_by(&b)
+      reorder_list_attr_by(:lines, &b)
     end
 
     def each_line(&b) # :yields: tipindex, line
