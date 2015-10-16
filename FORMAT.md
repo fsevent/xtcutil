@@ -43,11 +43,7 @@ A node object has following members.
 - name: NNAME           # the name of the node
 - degree: INTEGER       # the number of the edges connected to this node
 - pos: [X, Y, Z]        # the position of this node as 3-element array
-- edges0: [[0 or 1, ENAME]      # the first set of edges connected to this node
-- edges1: [[0 or 1, ENAME]      # the second set of edge connected to this node
 - max_gap: NUMBER       # ideally this should be zero.  maximum distance to the connected edges. (debug)
-- angle_extent0: NUMBER # ideally this should be zero. the angle which occupy edges0 (debug)
-- angle_extent1: NUMBER # ideally this should be zero. the angle which occupy edges1 (debug)
 - comments: [STRING, ...]       # comments (debug)
 
 "Change Elevations" command of xtrkcad can specify the height of a node.
@@ -58,15 +54,6 @@ However the interpolation alogrighm is different from xtrkcad, the result can be
 The name of the node, NNAME, is also specifiable from xtrkcad using "Change Elevations".
 Choose "Station" to specify the name of the node.
 If it is not specified, xtcutil generate the name automatically.
-
-edges0 and edges1 represents edges connected to this node.
-ENAME, edge name, specifies the edge.
-"0 or 1" specifies a tip of the edge.
-If 0 is specified, node0 of the edge is this node.
-If 1 is specified, node1 of the edge is this node.
-
-When a train pass a node between two paths,
-the train passes from one of edges0 to one of edges1 or from one of edges1 to one of edges0.
 
 ## edge object
 
