@@ -60,6 +60,63 @@ module Xtcutil
         json_data << edge_hash
         json_data << line_hash if line_hash
       }
+      eps = n.get_list_attr(:ep)
+      eps.each {|ep1_part_index, ep1_num, ep1_type|
+        eps.each {|ep2_part_index, ep2_num, ep2_type|
+          next if ep1_part_index == ep2_part_index
+          part1 = layout.get_part(ep1_part_index)
+          part2 = layout.get_part(ep2_part_index)
+          part1.each_state_paths {|state1, paths1|
+            state1 ||= ''
+            paths1.each {|path1|
+              startindex_ary1 = layout.startindex_for_path(path1)
+              if n == path1[0].get_node(startindex_ary1[0])
+                startindex1 = 1-startindex_ary1[0]
+                edge1 = path1[0].get_line_name
+                endindex1 = startindex_ary1[0]
+              elsif n == path1[-1].get_node(1-startindex_ary1[-1])
+                startindex1 = startindex_ary1[-1]
+                edge1 = path1[-1].get_line_name
+                endindex1 = 1-startindex_ary1[-1]
+              else
+                next
+              end
+              part2.each_state_paths {|state2, paths2|
+                state2 ||= ''
+                paths2.each {|path2|
+                  startindex_ary2 = layout.startindex_for_path(path2)
+                  if n == path2[0].get_node(startindex_ary2[0])
+                    startindex2 = startindex_ary2[0]
+                    edge2 = path2[0].get_line_name
+                    endindex2 = 1-startindex_ary2[0]
+                  elsif n == path2[-1].get_node(1-startindex_ary2[-1])
+                    startindex2 = 1-startindex_ary2[-1]
+                    edge2 = path2[-1].get_line_name
+                    endindex2 = startindex_ary2[-1]
+                  else
+                    next
+                  end
+                  connection_hash = {
+                    type:"inter-part-connection",
+                    node:n.get_node_name,
+                    part1:"T#{ep1_part_index}",
+                    part2:"T#{ep2_part_index}",
+                    state1:state1,
+                    state2:state2,
+                    startindex1:startindex1,
+                    edge1:edge1,
+                    endindex1:endindex1,
+                    startindex2:startindex2,
+                    edge2:edge2,
+                    endindex2:endindex2,
+                  }
+                  json_data << connection_hash
+                }
+              }
+            }
+          }
+        }
+      }
     }
     layout.each_part {|part|
       numstates = 0
@@ -96,6 +153,7 @@ module Xtcutil
           1.upto(path.length-1) {|j|
             connection_hash = {
               type:"intra-part-connection",
+              node:path[j-1].get_node(1-startindex_ary[j-1]).get_node_name,
               part:"T#{part.index}",
               state:state,
               startindex1:startindex_ary[j-1],
@@ -109,6 +167,7 @@ module Xtcutil
             # reverse path is always available until we support spring point.
             connection_hash = {
               type:"intra-part-connection",
+              node:path[j].get_node(startindex_ary[j]).get_node_name,
               part:"T#{part.index}",
               state:state,
               startindex1:1-startindex_ary[j],

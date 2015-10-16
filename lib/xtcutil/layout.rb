@@ -47,7 +47,7 @@ module Xtcutil
 
     def get_part(index)
       if 0 < index && index < parts_ary.length
-        return parts[index] if parts[index]
+        return parts_ary[index] if parts_ary[index]
         raise "unexpected part index: #{index}"
       end
       raise "part index out of range: #{index}"
@@ -86,6 +86,7 @@ module Xtcutil
           ep_num += 1
           node = Node.new
           node.add_comment "T#{obj.index}EP#{ep_num}#{ep[:type]}"
+          node.add_list_attr :ep, [obj.index, ep_num, ep[:type]]
           node.add_list_attr :ep_pos, Vector[*ep[:pos]]
           node.add_list_attr :ep_angle, ((90 - ep[:angle]) % 360) * DEG_TO_RAD
           obj.set_endpoint_node ep, node
