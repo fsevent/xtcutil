@@ -88,6 +88,40 @@ module Xtcutil
           json_data << path_hash
         }
       }
+      part.each_state_paths {|state, paths|
+        paths.each {|path|
+          startindex_ary = layout.startindex_for_path(path)
+          startindex_linename_ary = startindex_ary.zip(path).map {|i, line| [i, line.get_line_name] }
+          state ||= ''
+          1.upto(path.length-1) {|j|
+            connection_hash = {
+              type:"intra-part-connection",
+              part:"T#{part.index}",
+              state:state,
+              startindex1:startindex_ary[j-1],
+              edge1:path[j-1].get_line_name,
+              endindex1:1-startindex_ary[j-1],
+              startindex2:startindex_ary[j],
+              edge2:path[j].get_line_name,
+              endindex2:1-startindex_ary[j],
+            }
+            json_data << connection_hash
+            # reverse path is always available until we support spring point.
+            connection_hash = {
+              type:"intra-part-connection",
+              part:"T#{part.index}",
+              state:state,
+              startindex1:1-startindex_ary[j],
+              edge1:path[j].get_line_name,
+              endindex1:startindex_ary[j],
+              startindex2:1-startindex_ary[j-1],
+              edge2:path[j-1].get_line_name,
+              endindex2:startindex_ary[j-1],
+            }
+            json_data << connection_hash
+          }
+        }
+      }
     }
     json_data
   end
