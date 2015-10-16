@@ -25,6 +25,8 @@ The value of "type" member is one of follows.
 - "curveline"
 - "part"
 - "path"
+- "intra-part-connection"
+- "inter-part-connection"
 
 The position is represented in rectangular coordinate system.
 In a 2D image, the positive X axis heads left and
@@ -124,3 +126,48 @@ given by the state member.
 If [[0, edgeA], [1, edgeB]] is specified and the state of the part enables this path,
 a train can pass from edgeA's node0 to edgeA's node1 (same as edgeB's node1) via edgeA and
 from edgeB's node1 to edgeB's node0 via edgeB.
+
+## intra-part-connection object
+
+A intra-part-connection represents a connection in a part.
+A intra-part-connection has following members.
+
+- type: "intra-part-connection"
+- node: NNAME           # the name of the node shared by edge1 and edge2
+- part: "T#{INDEX}"     # the name of the part which consists edge1 and edge2
+- state: STRING         # the name of the state which makes this connection usable
+- startindex1: 0 or 1   # start index of edge1 which specifies the start point
+- edge1: ENAME          # first edge
+- endindex1: 0 or 1     # end index of edge1 which specifies the shared node
+- startindex2: 0 or 1   # start index of edge2 which specifies the shared node
+- edge2: ENAME          # second edge
+- endindex2: 0 or 1     # end index of edge2 which specifies end point
+
+A intra-part-connection means that train can run
+from edge1 to edge2 via the node NNAME
+when the part "T#{INDEX}" is in the specified state.
+edge1 and edge2 belong to the part "T#{INDEX}".
+
+## inter-part-connection object
+
+A inter-part-connection represents a connection between two parts.
+A inter-part-connection has following members.
+
+- type: "inter-part-connection"
+- node: NNAME           # the name of the node shared by edge1 and edge2
+- part1: "T#{INDEX}"    # the part name which contains edge1
+- part2: "T#{INDEX}"    # the part name which contains edge2
+- state1: STRING        # the part1 state which makes this connection usable
+- state2: STRING        # the part2 state which makes this connection usable
+- startindex1: 0 or 1   # start index of edge1 which specifies the start point
+- edge1: ENAME          # first edge
+- endindex1: 0 or 1     # end index of edge1 which specifies the shared node
+- startindex2: 0 or 1   # start index of edge2 which specifies the shared node
+- edge2: ENAME          # second edge
+- endindex2: 0 or 1     # end index of edge2 which specifies end point
+
+A inter-part-connection means that train can run
+from edge1 to edge2 via the node NNAME
+when part1 is in state1 and part2 is in state2.
+edge1 belong to part1.
+edge2 belong to part2.
