@@ -66,10 +66,10 @@ A edge object has following members.
 - name: ENAME           # the name of the edge
 - part: "T{INDEX}"      # the name of the part which contains this edge
 - angle0: NUMBER        # the angle of direction at node0
-- pos0: [X, Y, Z]       # the position of node0 as 3-element array
+- pos0: [X, Y]          # the position of node0 as 2-element array
 - node0: NNAME          # the name of node0
 - node1: NNAME          # the name of node1
-- pos1: [X, Y, Z]       # the position of node1 as 3-element array
+- pos1: [X, Y]          # the position of node1 as 2-element array
 - angle1: NUMBER        # the angle of direction at node1
 - distance: NUMBER      # the distance between node0 and node1 through this edge
 
