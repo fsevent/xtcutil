@@ -24,6 +24,11 @@ On Debian GNU/Linux 8.1 (jessie), following commands installs the prerequisite.
 
 Tanaka Akira
 
+## Acknowledgments
+
+This program is developed in a joint research project by
+AIST and JR East in 2015.
+
 ## Licence
 
 GPLv2 or later
