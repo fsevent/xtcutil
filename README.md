@@ -32,3 +32,5 @@ AIST and JR East in 2015.
 ## Licence
 
 GPLv2 or later
+
+(AIST program administration number for xtcutil 1.0: H28PRO-1979)
