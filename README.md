@@ -28,9 +28,8 @@ Tanaka Akira
 
 This program is developed in a joint research project by
 AIST and JR East in 2015.
+(AIST program administration number for xtcutil 1.0: H28PRO-1979)
 
 ## Licence
 
 GPLv2 or later
-
-(AIST program administration number for xtcutil 1.0: H28PRO-1979)
